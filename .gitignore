@@ -244,5 +244,6 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 
-AGIR.vcxproj
-AGIR.vcxproj.filters
+*.sln
+*.vcxproj
+*.vcxproj.filters
