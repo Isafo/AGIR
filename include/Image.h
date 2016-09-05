@@ -5,9 +5,9 @@ class Image
 public:
 	struct Color
 	{
-		double r;
-		double g;
-		double b;
+		double* r;
+		double* g;
+		double* b;
 	};
 
 	Image();
@@ -18,6 +18,5 @@ public:
 	const int x = 1000;
 	const int y = 1000;
 
-	Color** imgData;
-
+	Color imgData;
 };

@@ -3,35 +3,39 @@
 
 Image::Image()
 {
-	imgData = new Color*[y];
-	for (int i = 0; i < y; i++)
-		imgData[i] = new Color[x];
+	imgData.r = new double[x * y];
+	imgData.g = new double[x * y];
+	imgData.b = new double[x * y];
 
-	for (int i = 0; i < y; i++)
+	for (int i = 0; i < x * y; i++)
 	{
-		for (int j = 0; j < x; j++)
+		if (i < 500000) 
 		{
-			imgData[i][j].r = 0.0f;
-			imgData[i][j].g = 0.0f;
-			imgData[i][j].b = 0.0f;
+			imgData.r[i] = 1.0f;
+			imgData.g[i] = 0.0f;
+			imgData.b[i] = 0.0f;
+		}
+		else
+		{
+			imgData.r[i] = 0.0f;
+			imgData.g[i] = 0.0f;
+			imgData.b[i] = 0.0f;
 		}
 	}
 }
 
 Image::~Image()
 {
-	
-	for (int i = 0; i < y; i++)
-		delete[] imgData[i];
-
-	delete[] imgData;
+	delete[] imgData.r;
+	delete[] imgData.g;
+	delete[] imgData.b;
 }
 
 
 void Image::saveBMP()
 {
 	//save image
-	FILE *f;
+
 	unsigned char *img = NULL;
 	int filesize = 54 + 3 * x*y;
 	if (img)
@@ -48,9 +52,9 @@ void Image::saveBMP()
 		for (int j = 0; j < x; j++)
 		{
 			iX = j; iY = (y - 1) - i;
-			r = imgData[i][j].r * 255;
-			g = imgData[i][j].g * 255;
-			b = imgData[i][j].b * 255;
+			r = imgData.r[i * y + j] * 255;
+			g = imgData.g[i * y + j] * 255;
+			b = imgData.b[i * y + j] * 255;
 			if (r > 255) r = 255;
 			if (g > 255) g = 255;
 			if (b > 255) b = 255;
@@ -78,6 +82,7 @@ void Image::saveBMP()
 	bmpinfoheader[10] = (unsigned char)(y >> 16);
 	bmpinfoheader[11] = (unsigned char)(y >> 24);
 
+	FILE *f;
 	f = fopen("img.bmp", "wb");
 	fwrite(bmpfileheader, 1, 14, f);
 	fwrite(bmpinfoheader, 1, 40, f);
