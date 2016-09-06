@@ -7,14 +7,8 @@ public:
 	Sphere(float _rad);
 	~Sphere();
 
-	Sphere() {
-		nverts = 0;
-		ntris = 0;
-	};
-
 	void createSphere(float radius, int segments);
-
-	float getRadius(){return radius;}
+	float getRadius(){ return radius; }
 
 private:
 	float radius;

@@ -20,6 +20,5 @@ public:
 	int nverts; // Number of vertices
 	int ntris;  // Number of triangles
 
-	virtual ~Entity() = 0;
 
 };

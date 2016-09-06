@@ -1,19 +1,20 @@
 #include "Hexagon.h"
 
-Hexagon::Hexagon(float x, float y, float z)
+// TODO: remove the input position for this function
+Hexagon::Hexagon()
 {
 	nverts = 7;
 	ntris = 6;
 
 	float vertex_array_data[] = {
 		//		Vertex						Normals	
-		-3.0f + x,  y,    0.0f + z,			 0.0f, 1.0f, 0.0f,
-		0.0f,		y,	 -6.0f + z,			 0.0f, 1.0f, 0.0f,
-		10.0f + x,	y,	 -6.0f + z,			 0.0f, 1.0f, 0.0f,
-		13.0f + x,	y,	  0.0f + z,			 0.0f, 1.0f, 0.0f,
-		10.0f + x,	y,	  6.0f + z,			 0.0f, 1.0f, 0.0f,
-		0.0 + x,	y,	  6.0f + z,			 0.0f, 1.0f, 0.0f,
-		5.0f + x,	y,	  0.0f + z,			 0.0f, 1.0f, 0.0f,
+		-3.0f,  0.0f,     0.0f,			 0.0f, 1.0f, 0.0f,
+		0.0f,	0.0f,	 -6.0f,			 0.0f, 1.0f, 0.0f,
+		10.0f,	0.0f,	 -6.0f,			 0.0f, 1.0f, 0.0f,
+		13.0f,	0.0f,	  0.0f,			 0.0f, 1.0f, 0.0f,
+		10.0f,	0.0f,	  6.0f,			 0.0f, 1.0f, 0.0f,
+		0.0f,	0.0f,	  6.0f,			 0.0f, 1.0f, 0.0f,
+		5.0f,	0.0f,	  0.0f,			 0.0f, 1.0f, 0.0f,
 	};
 
 	// TODO: allocate a large buffer to save the data in. Dont want fragmented data
