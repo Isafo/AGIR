@@ -13,9 +13,4 @@ public:
 
 	Hexagon(float x, float y, float z);
 	~Hexagon();
-
-
-private:
-	int nverts; // Number of vertices in the vertex array
-	int ntris;  // Number of triangles in the index array (may be zero)
 };

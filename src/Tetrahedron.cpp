@@ -49,3 +49,11 @@ Tetrahedron::Tetrahedron(float dX, float dY, float dZ) {
 		indices[i] = index_array_data[i];
 	}
 }
+
+Tetrahedron::~Tetrahedron()
+{
+	delete[] indices;
+	delete[] verts.x;
+	delete[] verts.y;
+	delete[] verts.z;
+}
