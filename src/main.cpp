@@ -1,3 +1,5 @@
+#include <emmintrin.h>
+
 #include "Image.h"
 #include "Plane.h"
 #include "Sphere.h"
@@ -5,6 +7,8 @@
 #include "Tetrahedron.h"
 
 #define M_PI 3.14159265358979323846
+#define EPSILON 0.000001
+
 
 struct Vertices {
 	float* x;
@@ -18,12 +22,11 @@ struct EntityInfo {
 };
 
 struct TransformData {
-	//float rotation[4];
 	float translation[3];
 	//float minAabb[3];
 	//float maxAabb[3];
 	float scale; // uniform scaling
-	float rotation; // need to understand quaternions and rewrite this
+	float rotation;
 };
 
 struct Rays {
@@ -97,5 +100,75 @@ int main()
 	smallWallTransforms[3].translation[2] = { 3.0f };
 	smallWallTransforms[3].rotation = M_PI + 1.1071;
 	smallWallTransforms[3].scale = 1.0f;
-	
+}
+
+void triangleIntersection(Entity* entities, Rays* rays, unsigned int nrEntities, 
+	unsigned int nrRays)
+{
+	__m128 _0x4 = _mm_set1_ps(0.0f);
+
+	for (int i_ent = 0; i_ent < nrEntities; ++i_ent)
+	{
+		// get the vertices
+		int offset = 0;
+
+		for (int i_tri = 0; i_tri < entities[i_ent].ntris; ++i_tri)
+		{
+			float V1x = entities[i_ent].verts.x[entities[i_ent].indices[i_tri + offset]];
+			float V1y = entities[i_ent].verts.y[entities[i_ent].indices[i_tri + offset]];
+			float V1z = entities[i_ent].verts.z[entities[i_ent].indices[i_tri + offset]];
+			++offset;
+
+			float V2x = entities[i_ent].verts.x[entities[i_ent].indices[i_tri + offset]];
+			float V2y = entities[i_ent].verts.y[entities[i_ent].indices[i_tri + offset]];
+			float V2z = entities[i_ent].verts.z[entities[i_ent].indices[i_tri + offset]];
+			++offset;
+
+			float V3x = entities[i_ent].verts.x[entities[i_ent].indices[i_tri + offset]];
+			float V3y = entities[i_ent].verts.y[entities[i_ent].indices[i_tri + offset]];
+			float V3z = entities[i_ent].verts.z[entities[i_ent].indices[i_tri + offset]];
+			++offset;
+
+			// calculate two triangle edges
+			__m128 e1_xxxx = _mm_set1_ps(V2x - V1x);
+			__m128 e1_yyyy = _mm_set1_ps(V2y - V1y);
+			__m128 e1_zzzz = _mm_set1_ps(V2z - V1z);
+
+			__m128 e2_xxxx = _mm_set1_ps(V3x - V1x);
+			__m128 e2_yyyy = _mm_set1_ps(V3y - V1y);
+			__m128 e2_zzzz = _mm_set1_ps(V3z - V1z);
+			
+			// test intersection with the rays
+			for (int i_ray = 0; i_ray < nrRays; i_ray += 4)
+			{
+				__m128 rayStart_xxxx = ((__m128*)(rays->start->x))[i_ray];
+				__m128 rayStart_yyyy = ((__m128*)(rays->start->y))[i_ray];
+				__m128 rayStart_zzzz = ((__m128*)(rays->start->z))[i_ray];
+
+				__m128 rayEnd_xxxx = ((__m128*)(rays->end->x))[i_ray];
+				__m128 rayEnd_yyyy = ((__m128*)(rays->end->y))[i_ray];
+				__m128 rayEnd_zzzz = ((__m128*)(rays->end->z))[i_ray];
+			
+				__m128 rayDir_xxxx = _mm_sub_ps(rayEnd_xxxx, rayStart_xxxx);
+				__m128 rayDir_yyyy = _mm_sub_ps(rayEnd_yyyy, rayStart_yyyy);
+				__m128 rayDir_zzzz = _mm_sub_ps(rayEnd_zzzz, rayStart_zzzz);
+				
+				// cross prod
+				__m128 P_xxxx = _mm_sub_ps(_mm_mul_ps(rayDir_yyyy, e2_zzzz), _mm_mul_ps(rayDir_zzzz, e2_yyyy));
+				__m128 P_yyyy = _mm_sub_ps(_mm_mul_ps(rayDir_xxxx, e2_zzzz), _mm_mul_ps(rayDir_zzzz, e2_xxxx));
+				__m128 P_zzzz = _mm_sub_ps(_mm_mul_ps(rayDir_xxxx, e2_yyyy), _mm_mul_ps(rayDir_yyyy, e2_xxxx));
+
+				// e1 dot P
+				__m128 dotE1P_0123 = vecMulAdd(e1_xxxx, P_xxxx, _0x4);
+				dotE1P_0123 = vecMulAdd(e1_yyyy, P_yyyy, dotE1P_0123);
+				dotE1P_0123 = vecMulAdd(e1_xxxx, P_xxxx, _0x4);
+
+			}
+		}
+	}
+}
+
+__m128 vecMulAdd(__m128 a, __m128 b, __m128 c)
+{
+	return _mm_add_ps(_mm_mul_ps(a, b), c);
 }
