@@ -106,6 +106,7 @@ void triangleIntersection(Entity* entities, Rays* rays, unsigned int nrEntities,
 	unsigned int nrRays)
 {
 	__m128 _0x4 = _mm_set1_ps(0.0f);
+	__m128 _1x4 = _mm_set1_ps(1.0f);
 
 	for (int i_ent = 0; i_ent < nrEntities; ++i_ent)
 	{
@@ -117,6 +118,10 @@ void triangleIntersection(Entity* entities, Rays* rays, unsigned int nrEntities,
 			float V0x = entities[i_ent].verts.x[entities[i_ent].indices[i_tri + offset]];
 			float V0y = entities[i_ent].verts.y[entities[i_ent].indices[i_tri + offset]];
 			float V0z = entities[i_ent].verts.z[entities[i_ent].indices[i_tri + offset]];
+
+			__m128 V0_xxxx = _mm_set1_ps(V0x);
+			__m128 V0_yyyy = _mm_set1_ps(V0y);
+			__m128 V0_zzzz = _mm_set1_ps(V0z);
 			++offset;
 
 			float V1x = entities[i_ent].verts.x[entities[i_ent].indices[i_tri + offset]];
@@ -162,7 +167,41 @@ void triangleIntersection(Entity* entities, Rays* rays, unsigned int nrEntities,
 				// e1 dot P
 				__m128 dotE1P_0123 = vecMulAdd(e1_xxxx, P_xxxx, _0x4);
 				dotE1P_0123 = vecMulAdd(e1_yyyy, P_yyyy, dotE1P_0123);
-				dotE1P_0123 = vecMulAdd(e1_xxxx, P_xxxx, dotE1P_0123);
+				dotE1P_0123 = vecMulAdd(e1_zzzz, P_zzzz, dotE1P_0123);
+
+				// check if P and e1 are parallell
+				// TODO: ...
+
+				__m128 invDotE1P_0123 = _mm_div_ps(_1x4, dotE1P_0123);
+
+				// calculate distance from v0 to ray origin
+				__m128 T_xxxx = _mm_sub_ps(rayStart_xxxx, V0_xxxx);
+				__m128 T_yyyy = _mm_sub_ps(rayStart_yyyy, V0_yyyy);
+				__m128 T_zzzz = _mm_sub_ps(rayStart_zzzz, V0_zzzz);
+
+				// T dot P
+				__m128 dotTP_0123 = vecMulAdd(T_xxxx, P_xxxx, _0x4);
+				dotTP_0123 = vecMulAdd(T_yyyy, P_yyyy, dotTP_0123);
+				dotTP_0123 = vecMulAdd(T_zzzz, P_zzzz, dotTP_0123);
+
+				// check if the intersection lies outside of the triangle
+				// TODO: ...
+
+				// cross prod T x e1
+				__m128 Q_xxxx = _mm_sub_ps(_mm_mul_ps(T_yyyy, e1_zzzz), _mm_mul_ps(T_zzzz, e1_yyyy));
+				__m128 Q_yyyy = _mm_sub_ps(_mm_mul_ps(T_xxxx, e1_zzzz), _mm_mul_ps(T_zzzz, e1_xxxx));
+				__m128 Q_zzzz = _mm_sub_ps(_mm_mul_ps(T_xxxx, e1_yyyy), _mm_mul_ps(T_yyyy, e1_xxxx));
+
+				// D dot Q
+				__m128 dotDQ_0123 = vecMulAdd(rayDir_xxxx, Q_xxxx, _0x4);
+				dotDQ_0123 = vecMulAdd(rayDir_yyyy, Q_yyyy, dotDQ_0123);
+				dotDQ_0123 = vecMulAdd(rayDir_zzzz, Q_zzzz, dotDQ_0123);
+
+				__m128 v_0123 = _mm_mul_ps(dotDQ_0123, invDotE1P_0123);
+
+				// check if the intersection lies outside of the triangle
+				// TODO: ...
+
 
 			}
 		}
