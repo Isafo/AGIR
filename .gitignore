@@ -247,3 +247,6 @@ ModelManifest.xml
 *.sln
 *.vcxproj
 *.vcxproj.filters
+
+external/
+img.bmp

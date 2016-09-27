@@ -1,13 +1,15 @@
 #pragma once
-#include "Entity.h"
+#include "Triangle.h"
 
-class Plane :
-	public Entity
+#include <memory>
+
+class Plane
 {
 public:
-	Plane(float dX, float dZ);
-	~Plane();
+	Plane(const glm::vec3 a, const glm::vec3 b, const glm::vec3 c, const glm::vec3 d);
+	~Plane() = default;
 
 private:
-
+	std::unique_ptr<Triangle> m_t1;
+	std::unique_ptr<Triangle> m_t2;
 };

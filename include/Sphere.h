@@ -1,15 +1,15 @@
 #pragma once
-#include "Entity.h"
-class Sphere : public Entity {
-public:
-	
-	// Creates a sphere  
-	Sphere(float _rad);
-	~Sphere();
+#include "glm/glm.hpp"
 
-	void createSphere(float radius, int segments);
-	float getRadius(){ return radius; }
+// TODO: add material later
+class Sphere 
+{
+public:  
+	Sphere(const glm::vec3 p, float r);
+	~Sphere() = default;
 
 private:
-	float radius;
+	glm::vec3 m_position;
+	float m_radius;
+	//Material m_material;
 };
