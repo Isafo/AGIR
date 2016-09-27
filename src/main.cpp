@@ -6,9 +6,6 @@
 #include "Hexagon.h"
 #include "Tetrahedron.h"
 
-#define M_PI 3.14159265358979323846
-#define EPSILON 0.000001
-
 inline void createRoom(std::unique_ptr<Plane>* p, std::unique_ptr<Hexagon>* h);
 
 int main()

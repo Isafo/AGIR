@@ -76,5 +76,5 @@ inline bool rayIntersection(const Triangle* tri, const Ray* ray, RayIntersection
 	data->m_time = t;
 	data->m_intersectionPoint = o + d * t;
 	data->m_normal = normal;
-	//data->m_material = tri->material;
+	//data->m_material = tri->m_material;
 }
