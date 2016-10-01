@@ -1,6 +1,8 @@
 #pragma once
 #include "glm/glm.hpp"
 
+#include "Ray.h"
+
 // TODO: add material later
 class Sphere 
 {
@@ -12,6 +14,7 @@ public:
 	float m_radius;
 	//Material m_material;
 };
+
 
 inline bool rayIntersection(const Sphere* sphere, const Ray* ray, RayIntersectionData* data)
 {
@@ -56,4 +59,6 @@ inline bool rayIntersection(const Sphere* sphere, const Ray* ray, RayIntersectio
 	data->m_intersectionPoint = intersection_point;
 	data->m_normal = normal;
 	//data->m_material = sphere->m_material;
+	
+	return true;
 }

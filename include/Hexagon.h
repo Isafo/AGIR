@@ -5,13 +5,99 @@
 
 #include "Triangle.h"
 
-class Hexagon
+struct Hexagon
 {
-public:
-	Hexagon();
-	Hexagon(bool);
-	~Hexagon() = default;
+	// floor
+	Hexagon()
+	{
+		m_traingles[0] = std::make_unique<Triangle>
+		(
+			glm::vec3(5.0f, -5.0f, 0.0f),
+			glm::vec3(-3.0f, -5.0f, 0.0f),
+			glm::vec3(0.0f, -5.0f, -6.0f)
+		);
 
-private:
-	std::unique_ptr<Triangle> m_t1, m_t2, m_t3, m_t4, m_t5, m_t6;
+		m_traingles[1] = std::make_unique<Triangle>
+		(
+			glm::vec3(5.0f, -5.0f, 0.0f),
+			glm::vec3(10.0f, -5.0f, -6.0f),
+			glm::vec3(0.0f, -5.0f, -6.0f)
+		);
+
+		m_traingles[2] = std::make_unique<Triangle>
+		(
+			glm::vec3(5.0f, -5.0f, 0.0f),
+			glm::vec3(13.0f, -5.0f, 0.0f),
+			glm::vec3(10.0f, -5.0f, -6.0f)
+		);
+
+		m_traingles[3] = std::make_unique<Triangle>
+		(
+			glm::vec3(5.0f, -5.0f, 0.0f),
+			glm::vec3(13.0f, -5.0f, 0.0f),
+			glm::vec3(10.0f, -5.0f, 6.0f)
+		);
+
+		m_traingles[4] = std::make_unique<Triangle>
+		(
+			glm::vec3(5.0f, -5.0f, 0.0f),
+			glm::vec3(10.0f, -5.0f, 6.0f),
+			glm::vec3(0.0f, -5.0f, 6.0f)
+		);
+
+		m_traingles[5] = std::make_unique<Triangle>
+		(
+			glm::vec3(5.0f, -5.0f, 0.0f),
+			glm::vec3(0.0f, -5.0f, 6.0f),
+			glm::vec3(-3.0f, -5.0f, 0.0f)
+		);
+	}
+
+	// roof
+	Hexagon(bool)
+	{
+		m_traingles[0] = std::make_unique<Triangle>
+		(
+			glm::vec3(-3.0f, 5.0f, 0.0f),
+			glm::vec3(0.0f, 5.0f, -6.0f),
+			glm::vec3(5.0f, 5.0f, 0.0f)
+		);
+
+		m_traingles[1] = std::make_unique<Triangle>
+		(
+			glm::vec3(0.0f, 5.0f, -6.0f),
+			glm::vec3(10.0f, 5.0f, -6.0f),
+			glm::vec3(5.0f, 5.0f, 0.0f)
+		);
+
+		m_traingles[2] = std::make_unique<Triangle>
+		(
+			glm::vec3(10.0f, 5.0f, -6.0f),
+			glm::vec3(13.0f, 5.0f, 0.0f),
+			glm::vec3(5.0f, 5.0f, 0.0f)
+		);
+
+		m_traingles[3] = std::make_unique<Triangle>
+		(
+			glm::vec3(13.0f, 5.0f, 0.0f),
+			glm::vec3(10.0f, 5.0f, 6.0f),
+			glm::vec3(5.0f, 5.0f, 0.0f)
+		);
+
+		m_traingles[4] = std::make_unique<Triangle>
+		(
+			glm::vec3(10.0f, 5.0f, 6.0f),
+			glm::vec3(0.0f, 5.0f, 6.0f),
+			glm::vec3(5.0f, 5.0f, 0.0f)
+		);
+
+		m_traingles[5] = std::make_unique<Triangle>
+		(
+			glm::vec3(0.0f, 5.0f, 6.0f),
+			glm::vec3(-3.0f, 5.0f, 0.0f),
+			glm::vec3(5.0f, 5.0f, 0.0f)
+		);
+	}
+
+	std::unique_ptr<Triangle> m_traingles[6];
 };
