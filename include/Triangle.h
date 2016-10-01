@@ -5,26 +5,27 @@
 #include "glm/glm.hpp"
 
 #include "Ray.h"
+#include "Material.h"
 
-struct Material 
-{
-	float m_diffuse[3];
-	float m_emmisive[3];
-};
-
-//TODO: add material later
 struct Triangle 
 {
-	Triangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c)//, const Material& material) 
-		: m_a(a), m_b(b), m_c(c)//, m_material(material)
+	Triangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, 
+		float dR, float dG, float dB, float eR, float eG, float eB)
+		: m_a(a), m_b(b), m_c(c)
 	{
 		m_normal = glm::normalize(glm::cross(m_b - m_a, m_c - m_a));
+		m_material.m_diffuse.m_r = dR;
+		m_material.m_diffuse.m_g = dG;
+		m_material.m_diffuse.m_b = dB;
+		m_material.m_emmisive.m_r = eR;
+		m_material.m_emmisive.m_g = eG;
+		m_material.m_emmisive.m_b = eB;
 	}
 
 	glm::vec3 m_a;
 	glm::vec3 m_b;
 	glm::vec3 m_c;
-	//Material m_material;
+	TriMaterial m_material;
 	glm::vec3 m_normal;
 };
 
@@ -76,5 +77,5 @@ inline bool rayIntersection(const Triangle* tri, const Ray* ray, RayIntersection
 	data->m_time = t;
 	data->m_intersectionPoint = o + d * t;
 	data->m_normal = normal;
-	//data->m_material = tri->m_material;
+	data->m_material = tri->m_material;
 }

@@ -5,9 +5,9 @@ class Image
 public:
 	struct Color
 	{
-		double* r;
-		double* g;
-		double* b;
+		float* r;
+		float* g;
+		float* b;
 	};
 
 	Image();

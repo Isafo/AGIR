@@ -2,6 +2,8 @@
 
 #include "glm/glm.hpp"
 
+#include "Material.h"
+
 struct Ray
 {
 	glm::vec3 m_pos;
@@ -10,7 +12,7 @@ struct Ray
 
 struct RayIntersectionData
 {
-	//const Material m_material;
+	TriMaterial m_material;
 	glm::vec3 m_intersectionPoint;
 	glm::vec3 m_normal;
 	float m_time;

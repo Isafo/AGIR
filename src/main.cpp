@@ -16,12 +16,18 @@ inline void renderPixels(Image* img, Camera* cam);
 inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionData);
 
 const std::array<Plane, 6> C_PLANES = {
-	Plane(glm::vec3(0.0f, -5.0f, -6.0f), glm::vec3(0.0f, 5.0f, -6.0f), glm::vec3(10.0f, 5.0f, -6.0f), glm::vec3(10.0f, -5.0f, -6.0f)),
-	Plane(glm::vec3(0.0f, -5.0f, 6.0f), glm::vec3(0.0f, 5.0f, 6.0f), glm::vec3(10.0f, 5.0f, 6.0f), glm::vec3(10.0f, -5.0f, 6.0f)),
-	Plane(glm::vec3(0.0f, -5.0f, -6.0f), glm::vec3(-3.0f, -5.0f,  0.0f), glm::vec3(-3.0f,  5.0f,  0.0f), glm::vec3(0.0f,  5.0f, -6.0f)),
-	Plane(glm::vec3(-3.0f, -5.0f, 0.0f), glm::vec3(0.0f, -5.0f, 6.0f), glm::vec3(0.0f, 5.0f, 6.0f), glm::vec3(-3.0f, 5.0f, 0.0f)),
-	Plane(glm::vec3(10.0f, -5.0f, -6.0f), glm::vec3(10.0f, 5.0f, -6.0f), glm::vec3(13.0f, 5.0f, 0.0f), glm::vec3(13.0f, -5.0f, 0.0f)),
-	Plane(glm::vec3(13.0f, -5.0f, 0.0f), glm::vec3(13.0f, 5.0f, 0.0f), glm::vec3(10.0f, 5.0f, -6.0f),	glm::vec3(10.0f, -5.0f, -6.0f))
+	Plane(glm::vec3(0.0f, -5.0f, -6.0f), glm::vec3(0.0f, 5.0f, -6.0f), glm::vec3(10.0f, 5.0f, -6.0f), glm::vec3(10.0f, -5.0f, -6.0f),
+		  1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f),
+	Plane(glm::vec3(0.0f, -5.0f, 6.0f), glm::vec3(0.0f, 5.0f, 6.0f), glm::vec3(10.0f, 5.0f, 6.0f), glm::vec3(10.0f, -5.0f, 6.0f),
+		  0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f),
+	Plane(glm::vec3(0.0f, -5.0f, -6.0f), glm::vec3(-3.0f, -5.0f,  0.0f), glm::vec3(-3.0f,  5.0f,  0.0f), glm::vec3(0.0f,  5.0f, -6.0f),
+		  0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f),
+	Plane(glm::vec3(-3.0f, -5.0f, 0.0f), glm::vec3(0.0f, -5.0f, 6.0f), glm::vec3(0.0f, 5.0f, 6.0f), glm::vec3(-3.0f, 5.0f, 0.0f),
+		  0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f),
+	Plane(glm::vec3(10.0f, -5.0f, -6.0f), glm::vec3(10.0f, 5.0f, -6.0f), glm::vec3(13.0f, 5.0f, 0.0f), glm::vec3(13.0f, -5.0f, 0.0f),
+		  0.0f, 0.8f, 1.0f, 0.0f, 0.0f, 0.0f),
+	Plane(glm::vec3(13.0f, -5.0f, 0.0f), glm::vec3(13.0f, 5.0f, 0.0f), glm::vec3(10.0f, 5.0f, -6.0f),	glm::vec3(10.0f, -5.0f, -6.0f),
+		  1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f),
 };
 
 const std::array<Hexagon, 2> C_HEX = {
@@ -33,14 +39,11 @@ const std::array<Hexagon, 2> C_HEX = {
 int main()
 {
 	Image img;
-	img.saveBMP();
 
 	Camera cam(glm::vec3(-1.0f, 0.0, 0.0));
 
-	std::unique_ptr<Plane> planes[6];
-	std::unique_ptr<Hexagon> hex[2];
-
 	renderPixels(&img, &cam);
+	img.saveBMP();
 }
 
 inline void renderPixels(Image* img, Camera* cam)
@@ -68,6 +71,9 @@ inline void renderPixels(Image* img, Camera* cam)
 		
 		RayIntersectionData intersectionData;
 		findClosestIntersection(&ray, &intersectionData);
+		img->imgData.r[pixelIndex] = intersectionData.m_material.m_diffuse.m_r;
+		img->imgData.g[pixelIndex] = intersectionData.m_material.m_diffuse.m_g;
+		img->imgData.b[pixelIndex] = intersectionData.m_material.m_diffuse.m_b;
 	}
 }
 
@@ -81,15 +87,15 @@ inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionD
 		intersected |= rayIntersection(p.m_triangles[0].get(), ray, intersectionData);
 	}
 	// TODO: redesign this in such a way that all triangles for an entity can be sent at once
-	for (const auto& h : C_HEX)
-	{
-		intersected |= rayIntersection(h.m_traingles[0].get(), ray, intersectionData);
-		intersected |= rayIntersection(h.m_traingles[1].get(), ray, intersectionData);
-		intersected |= rayIntersection(h.m_traingles[2].get(), ray, intersectionData);
-		intersected |= rayIntersection(h.m_traingles[3].get(), ray, intersectionData);
-		intersected |= rayIntersection(h.m_traingles[4].get(), ray, intersectionData);
-		intersected |= rayIntersection(h.m_traingles[5].get(), ray, intersectionData);
-	}
+	//for (const auto& h : C_HEX)
+	//{
+	//	intersected |= rayIntersection(h.m_traingles[0].get(), ray, intersectionData);
+	//	intersected |= rayIntersection(h.m_traingles[1].get(), ray, intersectionData);
+	//	intersected |= rayIntersection(h.m_traingles[2].get(), ray, intersectionData);
+	//	intersected |= rayIntersection(h.m_traingles[3].get(), ray, intersectionData);
+	//	intersected |= rayIntersection(h.m_traingles[4].get(), ray, intersectionData);
+	//	intersected |= rayIntersection(h.m_traingles[5].get(), ray, intersectionData);
+	//}
 
 	return intersected;
 }

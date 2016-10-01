@@ -2,17 +2,19 @@
 #include "glm/glm.hpp"
 
 #include "Ray.h"
+#include "Material.h"
 
 // TODO: add material later
 class Sphere 
 {
 public:  
-	Sphere(const glm::vec3 p, float r);
+	Sphere(const glm::vec3 p, float r,
+		float dR, float dG, float dB, float eR, float eG, float eB);
 	~Sphere() = default;
 
 	glm::vec3 m_position;
 	float m_radius;
-	//Material m_material;
+	TriMaterial m_material;
 };
 
 
@@ -58,7 +60,7 @@ inline bool rayIntersection(const Sphere* sphere, const Ray* ray, RayIntersectio
 	data->m_time = t;
 	data->m_intersectionPoint = intersection_point;
 	data->m_normal = normal;
-	//data->m_material = sphere->m_material;
+	data->m_material = sphere->m_material;
 	
 	return true;
 }

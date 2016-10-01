@@ -3,25 +3,9 @@
 
 Image::Image()
 {
-	imgData.r = new double[x * y];
-	imgData.g = new double[x * y];
-	imgData.b = new double[x * y];
-
-	for (int i = 0; i < x * y; i++)
-	{
-		if (i < 500000) 
-		{
-			imgData.r[i] = 1.0f;
-			imgData.g[i] = 0.0f;
-			imgData.b[i] = 0.0f;
-		}
-		else
-		{
-			imgData.r[i] = 0.0f;
-			imgData.g[i] = 0.0f;
-			imgData.b[i] = 0.0f;
-		}
-	}
+	imgData.r = new float[x * y];
+	imgData.g = new float[x * y];
+	imgData.b = new float[x * y];
 }
 
 Image::~Image()
