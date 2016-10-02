@@ -1,4 +1,5 @@
 #include <array>
+#include <vector>
 
 #include <glm/glm.hpp>
 
@@ -9,6 +10,8 @@
 #include "Tetrahedron.h"
 #include "Ray.h"
 #include "Camera.h"
+#include "triangleScene.h"
+
 
 #define D_RESOLUTION 1000000
 
@@ -22,11 +25,11 @@ const std::array<Plane, 6> C_PLANES = {
 		  0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f),
 	Plane(glm::vec3(0.0f, -5.0f, -6.0f), glm::vec3(-3.0f, -5.0f,  0.0f), glm::vec3(-3.0f,  5.0f,  0.0f), glm::vec3(0.0f,  5.0f, -6.0f),
 		  0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f),
-	Plane(glm::vec3(-3.0f, -5.0f, 0.0f), glm::vec3(0.0f, -5.0f, 6.0f), glm::vec3(0.0f, 5.0f, 6.0f), glm::vec3(-3.0f, 5.0f, 0.0f),
+	Plane(glm::vec3(0.0f, -5.0f, 6.0f), glm::vec3(-3.0f, -5.0f, 0.0f), glm::vec3(-3.0f, 5.0f, 0.0f),  glm::vec3(0.0f, 5.0f, 6.0f),
 		  0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f),
-	Plane(glm::vec3(10.0f, -5.0f, -6.0f), glm::vec3(10.0f, 5.0f, -6.0f), glm::vec3(13.0f, 5.0f, 0.0f), glm::vec3(13.0f, -5.0f, 0.0f),
+	Plane(glm::vec3(10.0f, 5.0f, -6.0f), glm::vec3(10.0f, -5.0f, -6.0f), glm::vec3(13.0f, -5.0f, 0.0f), glm::vec3(13.0f, 5.0f, 0.0f),
 		  0.0f, 0.8f, 1.0f, 0.0f, 0.0f, 0.0f),
-	Plane(glm::vec3(13.0f, -5.0f, 0.0f), glm::vec3(13.0f, 5.0f, 0.0f), glm::vec3(10.0f, 5.0f, -6.0f),	glm::vec3(10.0f, -5.0f, -6.0f),
+	Plane(glm::vec3(10.0f, -5.0f, 6.0f), glm::vec3(10.0f, 5.0f, 6.0f), glm::vec3(13.0f, 5.0f, 0.0f),	glm::vec3(13.0f, -5.0f, 0.0f),
 		  1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f),
 };
 
@@ -81,11 +84,11 @@ inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionD
 {
 	bool intersected = false;
 	// TODO: redesign this in such a way that all triangles for an entity can be sent at once
-	for (const auto& p : C_PLANES)
-	{
-		intersected |= rayIntersection(p.m_triangles[0].get(), ray, intersectionData);
-		intersected |= rayIntersection(p.m_triangles[0].get(), ray, intersectionData);
-	}
+	//for (const auto& p : C_PLANES)
+	//{
+	//	intersected |= rayIntersection(p.m_triangles[0].get(), ray, intersectionData);
+	//	intersected |= rayIntersection(p.m_triangles[0].get(), ray, intersectionData);
+	//}
 	// TODO: redesign this in such a way that all triangles for an entity can be sent at once
 	//for (const auto& h : C_HEX)
 	//{
@@ -96,6 +99,10 @@ inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionD
 	//	intersected |= rayIntersection(h.m_traingles[4].get(), ray, intersectionData);
 	//	intersected |= rayIntersection(h.m_traingles[5].get(), ray, intersectionData);
 	//}
+
+	for (const auto& t : triangles) {
+		intersected |= rayIntersection(&t, ray, intersectionData);
+	}
 
 	return intersected;
 }
