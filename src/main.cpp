@@ -10,7 +10,6 @@
 #include <iostream>
 #include <array>
 
-#define M_PI 3.14159265359
 
 const std::array<Sphere, 1> c_spheres {
 	Sphere(glm::vec3(8.0f, 0.0f, -1.0f), 1.0f, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0)
@@ -114,12 +113,14 @@ inline bool shadowRay(RayIntersectionData* intersectionData)
 	ray.m_dir = glm::normalize(-l_i);
 
 	RayIntersectionData shadowRayIntersection;
+	shadowRayIntersection.m_time = -10000.0f;
+	shadowRayIntersection.m_intersectionPoint = glm::vec3(1000.0f, 1000.0f, 1000.0f);
 	findClosestIntersection(&ray, &shadowRayIntersection);
 
 	float shadowRayLength = glm::length(shadowRayIntersection.m_intersectionPoint - intersection);
 	float l_iLength = glm::length(l_i);
 	
-	if (shadowRayLength < l_iLength)
+	if (shadowRayLength < l_iLength  && shadowRayLength > EPSILON)
 	{
 		intersectionData->m_material.m_diffuse.m_r = 0.0f;
 		intersectionData->m_material.m_diffuse.m_g = 0.0f;
