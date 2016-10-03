@@ -16,8 +16,11 @@ const std::array<Sphere, 1> c_spheres {
 	Sphere(glm::vec3(8.0f, 0.0f, -1.0f), 1.0f, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0)
 };
 
+const glm::vec3 pointLightPos = glm::vec3(5.0f, 3.0f, 0.0f);
+
 inline void renderPixels(Image* img, Camera* cam);
 inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionData);
+inline bool shadowRay(RayIntersectionData* intersectionData);
 
 int main(){
 
@@ -67,6 +70,8 @@ inline void renderPixels(Image* img, Camera* cam)
 
 		findClosestIntersection(&ray, &iD);
 
+		shadowRay(&iD);
+
 		img->imgData.r[i] = iD.m_material.m_diffuse.m_r;
 		img->imgData.g[i] = iD.m_material.m_diffuse.m_g;
 		img->imgData.b[i] = iD.m_material.m_diffuse.m_b;
@@ -84,4 +89,42 @@ inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionD
 
 
 	return intersected;
+}
+
+inline bool shadowRay(RayIntersectionData* intersectionData)
+{
+	glm::vec3 intersection = intersectionData->m_intersectionPoint;
+	glm::vec3 surfaceNormal = intersectionData->m_normal;
+
+	glm::vec3 l_i = intersection - pointLightPos;
+
+	// if the surface normal and vector between the point light and intersection point
+	// point in the same direction the area is not lit
+	float dot = glm::dot(l_i, surfaceNormal);
+	if (dot > 0)
+	{
+		intersectionData->m_material.m_diffuse.m_r = 0.0f;
+		intersectionData->m_material.m_diffuse.m_g = 0.0f;
+		intersectionData->m_material.m_diffuse.m_b = 0.0f;
+		return false;
+	}
+		
+	Ray ray;
+	ray.m_pos = intersection;
+	ray.m_dir = glm::normalize(-l_i);
+
+	RayIntersectionData shadowRayIntersection;
+	findClosestIntersection(&ray, &shadowRayIntersection);
+
+	float shadowRayLength = glm::length(shadowRayIntersection.m_intersectionPoint - intersection);
+	float l_iLength = glm::length(l_i);
+	
+	if (shadowRayLength < l_iLength)
+	{
+		intersectionData->m_material.m_diffuse.m_r = 0.0f;
+		intersectionData->m_material.m_diffuse.m_g = 0.0f;
+		intersectionData->m_material.m_diffuse.m_b = 0.0f;
+		return false;
+	}
+	return true;
 }
