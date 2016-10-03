@@ -20,6 +20,7 @@ const glm::vec3 pointLightPos = glm::vec3(5.0f, 3.0f, 0.0f);
 
 inline void renderPixels(Image* img, Camera* cam);
 inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionData);
+inline bool perfectReflectedRay(Ray* ray, RayIntersectionData* intersectionData);
 inline bool shadowRay(RayIntersectionData* intersectionData);
 
 int main(){
@@ -70,6 +71,8 @@ inline void renderPixels(Image* img, Camera* cam)
 
 		findClosestIntersection(&ray, &iD);
 
+		perfectReflectedRay(&ray, &iD);
+
 		shadowRay(&iD);
 
 		img->imgData.r[i] = iD.m_material.m_diffuse.m_r;
@@ -87,8 +90,32 @@ inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionD
 	for (const auto& s : c_spheres)
 		intersected |= rayIntersection(&s, ray, intersectionData);
 
-
 	return intersected;
+}
+
+inline bool perfectReflectedRay(Ray* ray, RayIntersectionData* intersectionData)
+{
+
+	Ray reflectedRay;
+	reflectedRay.m_pos = intersectionData->m_intersectionPoint;
+
+	glm::vec3 N = intersectionData->m_normal;
+	glm::vec3 I = ray->m_pos + ray->m_dir;
+
+	reflectedRay.m_dir = I - 2 * glm::dot(I, N) * N;
+
+	RayIntersectionData reflectedRayIntersection;
+	reflectedRayIntersection.m_material.m_diffuse.m_r = 0.0f;
+	reflectedRayIntersection.m_material.m_diffuse.m_g = 0.0f;
+	reflectedRayIntersection.m_material.m_diffuse.m_b = 0.0f;
+
+	findClosestIntersection(&reflectedRay, &reflectedRayIntersection);
+
+	intersectionData->m_material.m_diffuse.m_r = intersectionData->m_material.m_diffuse.m_r * 0.8 + reflectedRayIntersection.m_material.m_diffuse.m_r * 0.2;
+	intersectionData->m_material.m_diffuse.m_g = intersectionData->m_material.m_diffuse.m_g * 0.8 + reflectedRayIntersection.m_material.m_diffuse.m_g * 0.2;
+	intersectionData->m_material.m_diffuse.m_b = intersectionData->m_material.m_diffuse.m_b * 0.8 + reflectedRayIntersection.m_material.m_diffuse.m_b * 0.2;
+
+	return true;
 }
 
 inline bool shadowRay(RayIntersectionData* intersectionData)
