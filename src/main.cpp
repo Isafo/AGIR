@@ -10,9 +10,10 @@
 #include <iostream>
 #include <array>
 
+#define D_EPSILON 0.001
 
-const std::array<Sphere, 1> c_spheres {
-	Sphere(glm::vec3(8.0f, 0.0f, -1.0f), 1.0f, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+const std::array<Sphere, 1> c_spheres{
+	{Sphere(glm::vec3(8.0f, 0.0f, -1.0f), 1.0f, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0) }
 };
 
 const glm::vec3 pointLightPos = glm::vec3(5.0f, 3.0f, 0.0f);
@@ -120,7 +121,7 @@ inline bool shadowRay(RayIntersectionData* intersectionData)
 	float shadowRayLength = glm::length(shadowRayIntersection.m_intersectionPoint - intersection);
 	float l_iLength = glm::length(l_i);
 	
-	if (shadowRayLength < l_iLength  && shadowRayLength > EPSILON)
+	if (shadowRayLength < l_iLength  && shadowRayLength > D_EPSILON)
 	{
 		intersectionData->m_material.m_diffuse.m_r = 0.0f;
 		intersectionData->m_material.m_diffuse.m_g = 0.0f;
