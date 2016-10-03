@@ -19,7 +19,6 @@ Image::~Image()
 void Image::saveBMP()
 {
 	//save image
-
 	unsigned char *img = NULL;
 	int filesize = 54 + 3 * x*y;
 	if (img)

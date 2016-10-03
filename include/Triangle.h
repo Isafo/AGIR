@@ -65,7 +65,7 @@ inline bool rayIntersection(const Triangle* tri, const Ray* ray, RayIntersection
 
 	if (t < EPSILON)
 		return false;
-	
+
 	// compare to earlier collision
 	if (data->m_time >= 0.0f && t > data->m_time)
 		return false;
