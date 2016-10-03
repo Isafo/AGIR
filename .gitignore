@@ -276,4 +276,5 @@ img.bmp
 *.out
 *.synctex.gz
 *.pdf
+report/AGIR.run.xml
 report/AGIR-blx.bib
