@@ -1,8 +1,6 @@
 #include "glm/glm.hpp"
 
 #include "Sphere.h"
-#include "Plane.h"
-#include "Tetrahedron.h"
 #include "Camera.h"
 #include "Ray.h"
 #include "Triangle.h"
@@ -10,8 +8,13 @@
 #include "triangleScene.h"
 
 #include <iostream>
+#include <array>
 
 #define M_PI 3.14159265359
+
+const std::array<Sphere, 1> c_spheres {
+	Sphere(glm::vec3(8.0f, 0.0f, -1.0f), 1.0f, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+};
 
 inline void renderPixels(Image* img, Camera* cam);
 inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionData);
@@ -74,9 +77,11 @@ inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionD
 {
 	bool intersected = false;
 	for (const auto& t : c_triangles)
-	{
 		intersected |= rayIntersection(&t, ray, intersectionData);
-	}
+
+	for (const auto& s : c_spheres)
+		intersected |= rayIntersection(&s, ray, intersectionData);
+
 
 	return intersected;
 }

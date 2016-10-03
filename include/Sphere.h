@@ -4,19 +4,26 @@
 #include "Ray.h"
 #include "Material.h"
 
-// TODO: add material later
 class Sphere 
 {
 public:  
 	Sphere(const glm::vec3 p, float r,
-		float dR, float dG, float dB, float eR, float eG, float eB);
+		float dR, float dG, float dB, float eR, float eG, float eB)
+		: m_position(p), m_radius(r)
+	{
+		m_material.m_diffuse.m_r = dR;
+		m_material.m_diffuse.m_g = dG;
+		m_material.m_diffuse.m_b = dB;
+		m_material.m_emmisive.m_r = eR;
+		m_material.m_emmisive.m_g = eG;
+		m_material.m_emmisive.m_b = eB;
+	};
 	~Sphere() = default;
 
 	glm::vec3 m_position;
 	float m_radius;
 	TriMaterial m_material;
 };
-
 
 inline bool rayIntersection(const Sphere* sphere, const Ray* ray, RayIntersectionData* data)
 {
@@ -37,7 +44,7 @@ inline bool rayIntersection(const Sphere* sphere, const Ray* ray, RayIntersectio
 
 	const float d = b * b - c;
 
-	// if the descriminant is negativ then the ray don't intersect the sphere
+	// if the discriminant is negativ then the ray don't intersect the sphere
 	if (d <= 0.0f)
 		return false;
 

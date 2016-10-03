@@ -301,5 +301,54 @@ const std::vector<Triangle> c_triangles{
 		0.0f,
 		0.0f,
 		0.0f
-	)
+	),
+
+	//Tetrahedron
+	Triangle(
+		glm::vec3(10.0f, -1.0f, 0.0f),
+		glm::vec3(8.0, -4.98f, 0.0f),
+		glm::vec3(12.0f, -4.98f, 2.0f),
+		1.0f,
+		1.0f,
+		1.0f,
+		0.0f,
+		0.0f,
+		0.0f
+	),
+
+	Triangle(
+		glm::vec3(10.0f, -1.0f, 0.0f),
+		glm::vec3(12.0f, -4.98f, -2.0f),
+		glm::vec3(8.0, -4.98f, 0.0f),
+		1.0f,
+		1.0f,
+		1.0f,
+		0.0f,
+		0.0f,
+		0.0f
+	),
+
+	Triangle(
+		glm::vec3(10.0f, -1.0f, 0.0f),
+		glm::vec3(12.0f, -4.98f, -2.0f),
+		glm::vec3(12.0f, -4.98f, 2.0f),
+		1.0f,
+		1.0f,
+		1.0f,
+		0.0f,
+		0.0f,
+		0.0f
+	),
+
+	Triangle(
+		glm::vec3(8.0, -4.98f, 0.0f),
+		glm::vec3(12.0f, -4.98f, 2.0f),
+		glm::vec3(12.0f, -4.98f, -2.0f),
+		1.0f,
+		1.0f,
+		1.0f,
+		0.0f,
+		0.0f,
+		0.0f
+	),
 };
