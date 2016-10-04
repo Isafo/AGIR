@@ -12,23 +12,22 @@
 #include <random>
 #include "math.h"
 
-#define D_EPSILON 0.001
+#define D_EPSILON 0.001f
 #define D_PI 3.1415926536
 
 const unsigned int C_MAX_BOUNCES = 5;
+const int C_MAX_SHADOWRAYS = 1.0f;
 
 const std::array<Sphere, 1> c_spheres{
 	{Sphere(glm::vec3(8.0f, 0.0f, -1.0f), 1.0f, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0) }
 };
-
-const glm::vec3 pointLightPos = glm::vec3(5.0f, 3.0f, 0.0f);
 
 inline void renderPixels(Image* img, Camera* cam);
 inline PixelRGB L_in(Ray* ray);
 inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray, int nrBounces);
 inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionData);
 inline bool perfectReflectedRay(Ray* ray, RayIntersectionData* intersectionData);
-inline bool shadowRay(RayIntersectionData* intersectionData);
+inline PixelRGB shadowRay(RayIntersectionData* intersectionData);
 float getRandomFloat();
 inline glm::vec3 uniformSampleHemisphere(const glm::vec3 &n);
 
@@ -91,15 +90,15 @@ inline PixelRGB L_in(Ray* ray)
 	findClosestIntersection(ray, &iD);
 /*
 	perfectReflectedRay(ray, &iD);
-
-	shadowRay(&iD);
 */
+	PixelRGB pixelColor = shadowRay(&iD);
+
 	glm::vec3 result = L_out(&iD, ray, 0);
 
-	PixelRGB pixelColor;
-	pixelColor.m_r = result.r;
-	pixelColor.m_g = result.g;
-	pixelColor.m_b = result.b;
+	//PixelRGB pixelColor;
+	pixelColor.m_r += result.r;
+	pixelColor.m_g += result.g;
+	pixelColor.m_b += result.b;
 
 	return pixelColor;
 	//return iD.m_material.m_diffuse;
@@ -174,44 +173,80 @@ inline bool perfectReflectedRay(Ray* ray, RayIntersectionData* intersectionData)
 	return true;
 }
 
-inline bool shadowRay(RayIntersectionData* intersectionData)
+inline PixelRGB shadowRay(RayIntersectionData* intersectionData)
 {
+	static glm::vec3 lightNormal = glm::vec3(0.0f, -1.0f, 0.0f);
+	static PixelRGB notLit = { 0.0f, 0.0f, 0.0f };
+	static int sizeOfTri = c_triangles.size();
+
+	glm::vec3 directLightSum = glm::vec3(0.0f);
+	glm::vec3 diffuse = glm::vec3(intersectionData->m_material.m_diffuse.m_r, 
+		intersectionData->m_material.m_diffuse.m_g, 
+		intersectionData->m_material.m_diffuse.m_b);
+
 	glm::vec3 intersection = intersectionData->m_intersectionPoint;
 	glm::vec3 surfaceNormal = intersectionData->m_normal;
 
-	glm::vec3 l_i = intersection - pointLightPos;
 
-	// if the surface normal and vector between the point light and intersection point
-	// point in the same direction the area is not lit
-	float dot = glm::dot(l_i, surfaceNormal);
+	// if the surface normal and light normal points in same direction the area is not lit
+	float dot = glm::dot(lightNormal, surfaceNormal);
 	if (dot > 0)
-	{
-		intersectionData->m_material.m_diffuse.m_r = 0.0f;
-		intersectionData->m_material.m_diffuse.m_g = 0.0f;
-		intersectionData->m_material.m_diffuse.m_b = 0.0f;
-		return false;
-	}
-		
-	Ray ray;
-	ray.m_pos = intersection;
-	ray.m_dir = glm::normalize(-l_i);
+		return notLit;
 
-	RayIntersectionData shadowRayIntersection;
-	shadowRayIntersection.m_time = -10000.0f;
-	shadowRayIntersection.m_intersectionPoint = glm::vec3(1000.0f, 1000.0f, 1000.0f);
-	findClosestIntersection(&ray, &shadowRayIntersection);
 
-	float shadowRayLength = glm::length(shadowRayIntersection.m_intersectionPoint - intersection);
-	float l_iLength = glm::length(l_i);
-	
-	if (shadowRayLength < l_iLength  && shadowRayLength > D_EPSILON)
+
+	for (int lIndex = 0; lIndex < 2; ++lIndex)
 	{
-		intersectionData->m_material.m_diffuse.m_r = 0.0f;
-		intersectionData->m_material.m_diffuse.m_g = 0.0f;
-		intersectionData->m_material.m_diffuse.m_b = 0.0f;
-		return false;
+		const Triangle* light = &(c_triangles.at(sizeOfTri - 1 - lIndex));
+
+		for (int i = 0; i < C_MAX_SHADOWRAYS; ++i)
+		{
+			// find random point on area light
+			float u = 0.0f;
+			float v = 0.0f;
+			do {
+				u = getRandomFloat();
+				v = getRandomFloat();
+			} while (u + v > 1.0f);
+
+			// constuct the point using barycentric coordinates
+			glm::vec3 q = (1 - u - v) * light->m_a + u * light->m_b + v * light->m_c;
+
+			glm::vec3 q_i = q - intersection;
+
+			Ray ray;
+			ray.m_dir = glm::normalize(q_i);
+			ray.m_pos = intersection + ray.m_dir * D_EPSILON;
+
+			RayIntersectionData shadowRayIntersection;
+			//TODO: These two assignments might not be needed test and remove
+			shadowRayIntersection.m_time = -10000.0f;
+			shadowRayIntersection.m_intersectionPoint = glm::vec3(1000.0f, 1000.0f, 1000.0f);
+			findClosestIntersection(&ray, &shadowRayIntersection);
+
+			float shadowRayLength = glm::length(shadowRayIntersection.m_intersectionPoint - intersection);
+			float q_iLength = glm::length(q_i);
+
+			if (shadowRayLength > q_iLength)
+			{
+				// TODO: rewrite this code to more general such that a light normal doesnt have to be 0, -1, 0
+				float beta = glm::dot(q_i, lightNormal);
+				float alpha = glm::dot(q_i, surfaceNormal);
+
+				// calculate the geometric term
+				float G = (cos(alpha) * cos(beta)) / (q_iLength * q_iLength);
+
+				directLightSum += diffuse * G;
+			}
+		}
 	}
-	return true;
+
+	// TODO: L0??? Le is (1.0, 1.0, 1.0) for all light sources not needed?
+	directLightSum = directLightSum * 2.0f * C_LIGHT_AREA / float(C_MAX_SHADOWRAYS);
+
+	PixelRGB directLight = { directLightSum.r, directLightSum.g, directLightSum.b };
+	return directLight;
+
 }
 
 float getRandomFloat()

@@ -4,6 +4,8 @@
 
 #include "Triangle.h"
 
+const float C_LIGHT_AREA = 6;
+
 const std::vector<Triangle> c_triangles{
 
 	// green wall
@@ -238,9 +240,9 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		1.0f,
 		1.0f,
-		1.0f,
-		1.0f,
-		1.0f
+		0.0f,
+		0.0f,
+		0.0f
 	),
 
 	Triangle(
@@ -250,9 +252,9 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		1.0f,
 		1.0f,
-		1.0f,
-		1.0f,
-		1.0f
+		0.0f,
+		0.0f,
+		0.0f
 	),
 
 	Triangle(
@@ -262,9 +264,9 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		1.0f,
 		1.0f,
-		1.0f,
-		1.0f,
-		1.0f
+		0.0f,
+		0.0f,
+		0.0f
 	),
 
 	Triangle(
@@ -274,9 +276,9 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		1.0f,
 		1.0f,
-		1.0f,
-		1.0f,
-		1.0f
+		0.0f,
+		0.0f,
+		0.0f
 	),
 
 	Triangle(
@@ -286,9 +288,9 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		1.0f,
 		1.0f,
-		1.0f,
-		1.0f,
-		1.0f
+		0.0f,
+		0.0f,
+		0.0f
 	),
 
 	Triangle(
@@ -298,9 +300,9 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		1.0f,
 		1.0f,
-		1.0f,
-		1.0f,
-		1.0f
+		0.0f,
+		0.0f,
+		0.0f
 	),
 
 	//Tetrahedron
@@ -351,4 +353,29 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		1.0f
 	),
+
+	// light
+	Triangle(
+		glm::vec3(5.0f, 4.999999f, 2.0f),
+		glm::vec3(5.0f, 4.999999f, -2.0f),
+		glm::vec3(8.0f, 4.999999f, 2.0f),
+		1.0f,
+		1.0f,
+		1.0f,
+		1.0f,
+		1.0f,
+		1.0f
+	),
+
+	Triangle(
+		glm::vec3(5.0f, 4.999999f, -2.0f),
+		glm::vec3(8.0f, 4.999999f, -2.0f),
+		glm::vec3(8.0f, 4.999999f, 2.0f),
+		1.0f,
+		1.0f,
+		1.0f,
+		1.0f,
+		1.0f,
+		1.0f
+	)
 };
