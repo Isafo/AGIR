@@ -86,10 +86,10 @@ Direct illumination is approximated by sending out a ray from the intersection p
 where $\mathbf{v}_0, \mathbf{v}_1$ and $\mathbf{v}_2$ are the vertices of the light source triangle. The direct illumination can then be estimated using
 
 %mention the PDE and choise of it some where
-{\small
-\begin{equation*}
-	L_D(x_N \rightarrow -\omega_{N-1}) = \frac{AL_0}{M} \sum_{i=1}^{M}f_r(x_N, \omega_S, i, -\omega_{N-1})V(x_N, q_i)G(x_n, q_i)
-\end{equation*}}
+\begin{align*}
+	L_D(x_N \rightarrow -\omega_{N-1}) = \\
+	 \frac{AL_0}{M} \sum_{i=1}^{M}f_r(x_N, \omega_S, i, -\omega_{N-1})V(x_N, q_i)G(x_n, q_i)
+\end{align*}
 
 where $M$ is the number of shadow rays, $x_N$ is the intersection point the shadow rays are cast from and $q_i$ are the $M$ randomly generated points on the light source. $V(x_N, q_i)$ is the visibility function and $G(x_n, q_i)$ is the geometric term calculated by 
 
