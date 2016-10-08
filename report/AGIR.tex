@@ -1,5 +1,6 @@
 \documentclass[twocolumn]{article}
 \usepackage{graphicx}
+\usepackage{amsmath}
 
 \usepackage[backend=bibtex]{biblatex}
 \addbibresource{refs.bib}
@@ -20,9 +21,86 @@
 
 \section{Introduction}
 
+\subsection{Monte Carlo ray-tracing}
+
+\subsection{Photon mapping}
+
+\subsection{Radiosity}
+
 \section{Background}
 
-\section{Method}
+\subsection{The rendering equation}
+
+\begin{align}
+\label{eq:rendereq}
+\begin{split}
+	 L(\mathbf{x} \rightarrow \omega_{out}) = L_e(\mathbf{x} \rightarrow \omega_{out}) + \\ \int_{\Omega} f_r(\mathbf{x}, \omega_{in}, \omega_{out})L(\mathbf{x} \leftarrow \omega_{in})cos\theta_{in}d\omega_{in}
+\end{split}
+\end{align}
+
+\subsection{Ray-triangle intersection}
+
+\begin{equation}
+	T(u,v) = (1 - u - v)\mathbf{v}_0 + u\mathbf{v}_1 + v\mathbf{v}_2
+\end{equation}
+
+\begin{equation}
+	\mathbf{x}(t) = \mathbf{p} + t\mathbf{d}
+\end{equation}
+
+\begin{equation}
+	u(\mathbf{v}_1 - \mathbf{v}_0) + v(\mathbf{v}_2 - \mathbf{v}_0) - t\mathbf{d} = \mathbf{p} - \mathbf{v}_0
+\end{equation}
+
+\[ 
+\left(
+  \begin{tabular}{c}
+  t \\
+  u \\
+  v 
+  \end{tabular}
+\right)
+= \frac{1}{\mathbf{P} \cdot \mathbf{E}_1}
+\left(
+  \begin{tabular}{c}
+  $\mathbf{Q} \cdot \mathbf{E}_2$ \\
+  $\mathbf{P} \cdot \mathbf{T}$ \\
+  $\mathbf{Q} \cdot \mathbf{D}$ 
+  \end{tabular}
+\right)
+\]
+
+\subsection{Ray-sphere intersection}
+
+\subsection{Monte Carlo integration}
+
+\section{Implementation}
+
+\subsection{Direct illumination}
+Direct illumination is approximated by sending out a ray from the intersection point of an object to the light source. This ray is called a shadow ray and is used to test whether the intersectionpoint on the object is visible to the light source. Since area light sources are used every point on the light source would have to be tested for visibility. This is not practical and thus a set of random points on the area light source are tested. These random points are generated using two random values $u$ and $v$ within the distribution $0 \leq u,v \leq 1$. These random values are regenerated until they satisfy the condition $u + v < 1$ and the point $\mathbf{q}$ can be calculated using barycentric coordinates
+
+\begin{equation*}
+	\mathbf{q} = (1 - u - v)\mathbf{v}_0 + u\mathbf{v}_1 + v\mathbf{v}_2
+\end{equation*}
+
+where $\mathbf{v}_0, \mathbf{v}_1$ and $\mathbf{v}_2$ are the vertices of the light source triangle. The direct illumination can then be estimated using
+
+%mention the PDE and choise of it some where
+{\small
+\begin{equation*}
+	L_D(x_N \rightarrow -\omega_{N-1}) = \frac{AL_0}{M} \sum_{i=1}^{M}f_r(x_N, \omega_S, i, -\omega_{N-1})V(x_N, q_i)G(x_n, q_i)
+\end{equation*}}
+
+where $M$ is the number of shadow rays, $x_N$ is the intersection point the shadow rays are cast from and $q_i$ are the $M$ randomly generated points on the light source. $V(x_N, q_i)$ is the visibility function and $G(x_n, q_i)$ is the geometric term calculated by 
+
+
+\begin{equation*}
+	G(x_n, q) = \frac{cos\alpha cos\beta}{d^2}
+\end{equation*}
+
+where d is the length of the shadow ray.
+
+\subsection{Indirect illumination}
 
 \section{Results}
 
