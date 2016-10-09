@@ -20,8 +20,9 @@
 
 
 \section{Introduction}
+Local lighting models only takes the direct illumination into account. In order to render photo realistic images both direct illumination and indirect illumination into account and thus the local lighting model does not suffice. Global illumination algorithms account for both direct and indirect illumination and can be used to render photo realistic images. Global illumination models are however computationally heavy and require more time to render. There exist several global illumination algorithms and there has been much research in the area in order to improve the different algorithms performance and result.
 
-\subsection{Monte Carlo ray-tracing}
+\subsection{Monte Carlo ray tracing}
 
 \subsection{Photon mapping}
 
@@ -31,6 +32,8 @@
 
 \subsection{The rendering equation}
 
+The light contribution from a point in the scene is made up of how much light is emitted from the object in the direction of the camera and how much incoming light is reflected towards the camera. This is calculated using the rendering equation \ref{eq:rendereq}.
+
 \begin{align}
 \label{eq:rendereq}
 \begin{split}
@@ -38,41 +41,77 @@
 \end{split}
 \end{align}
 
+The first part of the rendering equation $L_e(\mathbf{x} \rightarrow \omega_{out})$ is the light emitted form the point $\mathbf{x}$ in the direction $\omega_{out}$. The integral part of the equations is the incoming light that is reflected into the  direction $\omega_{out}$ integrated over the hemisphere $\Omega$, see fig. \ref{fig:hemisphere}.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1.0\linewidth]{pics/hemisphere.png}
+\caption{\label{fig:hemisphere} }
+\end{figure}
+
+The individual terms of the integral part are:
+
+\vspace*{1em}
+
+$f_r(\mathbf{x}, \omega_{in}, \omega_{out})$, is the Bidirectional reflectance distribution function or for short the BRDF. This term describes how much of the incoming light from the considered point on the hemisphere is reflected in the viewing direction. %mention different brdfs?
+
+\vspace*{1em}
+
+$L(\mathbf{x} \leftarrow \omega_{in})$, describes ho much light is coming in from the considered point on the hemisphere.
+
+\vspace*{1em}
+
+$cos\theta_{in}$, describes the area that the incoming light from the considered point on the hemisphere is distributed on. As the incoming light gets more perpendicular to the surface normal the light is distributed on a larger area and less is reflected.
+
+\subsection{Monte Carlo integration}
+	Since it is not possible to calculate the incoming radiance for an infinite number of infinitesimally small $d\omega$ a set of random sample points are used instead. Monte Carlo integration estimates a numerical integration using random numbers. The random points used are placed where the integrand is evaluated. 
+%pdf...
+
 \subsection{Ray-triangle intersection}
+Any point on a triangle can be expressed using eq. \ref{eq:bc} where $u$, $v$ and $ w = 1 - u - v$ are the barycentric coordinates. If the condition $u$, $v$, $w \leq 1$ is satisfied the point lies on the triangle. The ray can be expressed using eq. \ref{eq:ray}. Assuming that the ray intersects the triangle by setting the expression of the ray equal to a point on the triangle and simplifying the expression one receives eq. \ref{eq:simp}. Using Cramer's rule the three unknown variables can be solved for resulting in eq. \ref{eq:triInt}, where $E_1 = \mathbf{v}_1 - \mathbf{v}_0$ and $E_2 = \mathbf{v}_2 - \mathbf{v}_0$, $T = o - \mathbf{v}_0$, $P = D \times E_2$, $Q = T \times E_1$ and D is the normalized direction of the ray.
 
 \begin{equation}
+	\label{eq:bc}	
 	T(u,v) = (1 - u - v)\mathbf{v}_0 + u\mathbf{v}_1 + v\mathbf{v}_2
 \end{equation}
 
 \begin{equation}
-	\mathbf{x}(t) = \mathbf{p} + t\mathbf{d}
+	\label{eq:ray}
+	\mathbf{x}(t) = \mathbf{o} + t\mathbf{d}
 \end{equation}
 
 \begin{equation}
+	\label{eq:simp}
 	u(\mathbf{v}_1 - \mathbf{v}_0) + v(\mathbf{v}_2 - \mathbf{v}_0) - t\mathbf{d} = \mathbf{p} - \mathbf{v}_0
 \end{equation}
 
-\[ 
-\left(
-  \begin{tabular}{c}
-  t \\
-  u \\
-  v 
-  \end{tabular}
-\right)
+\begin{equation}
+\label{eq:triInt}
+\begin{pmatrix}
+	t \\
+  	u \\
+  	v 
+\end{pmatrix}
 = \frac{1}{\mathbf{P} \cdot \mathbf{E}_1}
-\left(
-  \begin{tabular}{c}
-  $\mathbf{Q} \cdot \mathbf{E}_2$ \\
-  $\mathbf{P} \cdot \mathbf{T}$ \\
-  $\mathbf{Q} \cdot \mathbf{D}$ 
-  \end{tabular}
-\right)
-\]
+\begin{pmatrix}
+	  	\mathbf{Q} \cdot \mathbf{E}_2 \\
+  		\mathbf{P} \cdot \mathbf{T} \\
+  		\mathbf{Q} \cdot \mathbf{D}
+\end{pmatrix}
+\end{equation}
 
 \subsection{Ray-sphere intersection}
+A point $\mathbf{x}$ is on the surface of a sphere wit radius $r$ and origin $c$ if it satisfies eq. \ref{eq:sphereC}. Thus the intersections between the ray and sphere surface satisfy this condition. Using eq. \ref{eq:ray} to express the ray and solving for d results in eq. \ref{eq:sphereInt}, where $b = 2\mathbf{d} \cdot (\mathbf{o} \cdot \mathbf{c})$, $a = \mathbf{d} \cdot \mathbf{d}$ and $c = (\mathbf{o} - \mathbf{c}) \cdot (\mathbf{o} - \mathbf{c}) - r^2$
 
-\subsection{Monte Carlo integration}
+\begin{equation}
+	\label{eq:sphereC}
+	||\mathbf{x} - \mathbf{o}||^2 = r^2
+\end{equation}
+
+\begin{equation}
+	\label{eq:sphereInt}
+	t = - \frac{b}{2} \pm \sqrt{\frac{b}{2}^2 - ac}
+\end{equation}
 
 \section{Implementation}
 
@@ -92,7 +131,6 @@ where $\mathbf{v}_0, \mathbf{v}_1$ and $\mathbf{v}_2$ are the vertices of the li
 \end{align*}
 
 where $M$ is the number of shadow rays, $x_N$ is the intersection point the shadow rays are cast from and $q_i$ are the $M$ randomly generated points on the light source. $V(x_N, q_i)$ is the visibility function and $G(x_n, q_i)$ is the geometric term calculated by 
-
 
 \begin{equation*}
 	G(x_n, q) = \frac{cos\alpha cos\beta}{d^2}
