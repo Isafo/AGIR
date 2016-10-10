@@ -16,7 +16,7 @@
 #define D_PI 3.1415926536
 
 const unsigned int C_MAX_BOUNCES = 5;
-const int C_MAX_SHADOWRAYS = 1.0f;
+const int C_MAX_SHADOWRAYS = 1;
 
 const std::array<Sphere, 1> c_spheres{
 	{Sphere(glm::vec3(8.0f, 0.0f, -1.0f), 1.0f, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0) }
@@ -91,7 +91,7 @@ inline PixelRGB L_in(Ray* ray)
 */
 	PixelRGB pixelColor = shadowRay(&iD);
 
-	glm::vec3 result = L_out(&iD, ray, 0);
+	//glm::vec3 result = L_out(&iD, ray, 0);
 
 	//PixelRGB pixelColor;
 	//pixelColor.m_r += result.r;
@@ -242,7 +242,6 @@ inline PixelRGB shadowRay(RayIntersectionData* intersectionData)
 
 	PixelRGB directLight = { directLightSum.r, directLightSum.g, directLightSum.b };
 	return directLight;
-
 }
 
 float getRandomFloat()
