@@ -87,17 +87,21 @@ inline PixelRGB L_in(Ray* ray)
 	iD.m_material.m_diffuse.m_b = 0.0f;
 
 	findClosestIntersection(ray, &iD);
-/*
-	perfectReflectedRay(ray, &iD);
-*/
+
 	PixelRGB pixelColor = shadowRay(&iD);
 
+	glm::vec3 result = L_out(&iD, ray, 0);
+	pixelColor.m_r += result.r;
+	pixelColor.m_g += result.g;
+	pixelColor.m_b += result.b;
+	
+	// for debuging indirect illumination
 	//glm::vec3 result = L_out(&iD, ray, 0);
 
 	//PixelRGB pixelColor;
-	//pixelColor.m_r += result.r;
-	//pixelColor.m_g += result.g;
-	//pixelColor.m_b += result.b;
+	//pixelColor.m_r = result.r;
+	//pixelColor.m_g = result.g;
+	//pixelColor.m_b = result.b;
 
 	return pixelColor;
 	//return iD.m_material.m_diffuse;
