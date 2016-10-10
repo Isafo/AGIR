@@ -227,7 +227,7 @@ inline PixelRGB shadowRay(RayIntersectionData* intersectionData)
 			float shadowRayLength = glm::length(shadowRayIntersection.m_intersectionPoint - intersection);
 			float q_iLength = glm::length(q_i);
 
-			if (shadowRayLength > q_iLength)
+			if (shadowRayLength >= q_iLength - 0.01f)
 			{
 				// TODO: rewrite this code to more general such that a light normal doesnt have to be 0, -1, 0
 				float beta = glm::dot(q_i, lightNormal);
