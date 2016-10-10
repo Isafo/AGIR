@@ -94,9 +94,9 @@ inline PixelRGB L_in(Ray* ray)
 	glm::vec3 result = L_out(&iD, ray, 0);
 
 	//PixelRGB pixelColor;
-	pixelColor.m_r += result.r;
-	pixelColor.m_g += result.g;
-	pixelColor.m_b += result.b;
+	//pixelColor.m_r += result.r;
+	//pixelColor.m_g += result.g;
+	//pixelColor.m_b += result.b;
 
 	return pixelColor;
 	//return iD.m_material.m_diffuse;
@@ -127,9 +127,9 @@ inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray, int nrBounces)
 	RayIntersectionData data;
 	// multiplication by 2 is because of the PDF
 	if (findClosestIntersection(&newRay, &data)) 
-		result += 2.0f * L_out(&data, &newRay, nrBounces + 1) * inDiffuse * glm::dot(newRay.m_dir, surfaceNormal);
+		result += 0.75f * 2.0f * L_out(&data, &newRay, nrBounces + 1) * inDiffuse * glm::dot(newRay.m_dir, surfaceNormal);
 	else 
-		result += 2.0f * rayMissColor * inDiffuse * glm::dot(newRay.m_dir, surfaceNormal);
+		result += 0.75f * 2.0f * rayMissColor * inDiffuse * glm::dot(newRay.m_dir, surfaceNormal);
 	
 	return result;
 }
@@ -185,14 +185,6 @@ inline PixelRGB shadowRay(RayIntersectionData* intersectionData)
 	glm::vec3 intersection = intersectionData->m_intersectionPoint;
 	glm::vec3 surfaceNormal = intersectionData->m_normal;
 
-
-	// if the surface normal and light normal points in same direction the area is not lit
-	float dot = glm::dot(lightNormal, surfaceNormal);
-	if (dot > 0)
-		return notLit;
-
-
-
 	for (int lIndex = 0; lIndex < 2; ++lIndex)
 	{
 		const Triangle* light = &(c_triangles.at(sizeOfTri - 1 - lIndex));
@@ -216,25 +208,31 @@ inline PixelRGB shadowRay(RayIntersectionData* intersectionData)
 			ray.m_dir = glm::normalize(q_i);
 			ray.m_pos = intersection + ray.m_dir * D_EPSILON;
 
-			RayIntersectionData shadowRayIntersection;
-			//TODO: These two assignments might not be needed test and remove
-			shadowRayIntersection.m_time = -10000.0f;
-			shadowRayIntersection.m_intersectionPoint = glm::vec3(1000.0f, 1000.0f, 1000.0f);
-			findClosestIntersection(&ray, &shadowRayIntersection);
-
-			float shadowRayLength = glm::length(shadowRayIntersection.m_intersectionPoint - intersection);
-			float q_iLength = glm::length(q_i);
-
-			if (shadowRayLength >= q_iLength - 0.01f)
+			// if the surface normal shadow ray points in different directions or are orthogonal
+			// it is not lit by the point on the area light considered
+			float dot = glm::dot(ray.m_dir, surfaceNormal);
+			if (dot > D_EPSILON)
 			{
-				// TODO: rewrite this code to more general such that a light normal doesnt have to be 0, -1, 0
-				float beta = glm::dot(q_i, lightNormal);
-				float alpha = glm::dot(q_i, surfaceNormal);
+				RayIntersectionData shadowRayIntersection;
+				//TODO: These two assignments might not be needed test and remove
+				shadowRayIntersection.m_time = -10000.0f;
+				shadowRayIntersection.m_intersectionPoint = glm::vec3(1000.0f, 1000.0f, 1000.0f);
+				findClosestIntersection(&ray, &shadowRayIntersection);
 
-				// calculate the geometric term
-				float G = (cos(alpha) * cos(beta)) / (q_iLength * q_iLength);
+				float shadowRayLength = glm::length(shadowRayIntersection.m_intersectionPoint - intersection);
+				float q_iLength = glm::length(q_i);
 
-				directLightSum += diffuse * G;
+				if (shadowRayLength >= q_iLength - 0.01f)
+				{
+					// TODO: rewrite this code to more general such that a light normal doesnt have to be 0, -1, 0
+					float beta = glm::dot(q_i, lightNormal);
+					float alpha = glm::dot(q_i, surfaceNormal);
+
+					// calculate the geometric term
+					float G = (cos(alpha) * cos(beta)) / (q_iLength * q_iLength);
+
+					directLightSum += diffuse * G;
+				}
 			}
 		}
 	}
