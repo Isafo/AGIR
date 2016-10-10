@@ -225,13 +225,13 @@ inline PixelRGB shadowRay(RayIntersectionData* intersectionData)
 				if (shadowRayLength >= q_iLength - 0.01f)
 				{
 					// TODO: rewrite this code to more general such that a light normal doesnt have to be 0, -1, 0
-					float beta = glm::dot(q_i, lightNormal);
-					float alpha = glm::dot(q_i, surfaceNormal);
+					float beta = glm::dot(q_i, lightNormal) / q_iLength;
+					float alpha = glm::dot(q_i, surfaceNormal) / q_iLength;
 
 					// calculate the geometric term
-					float G = (cos(alpha) * cos(beta)) / (q_iLength * q_iLength);
+					float G = (alpha * beta) / (q_iLength * q_iLength);
 
-					directLightSum += diffuse * G;
+					directLightSum += diffuse *G;
 				}
 			}
 		}
