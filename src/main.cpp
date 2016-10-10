@@ -53,7 +53,6 @@ inline void renderPixels(Image* img, Camera* cam)
 	ray.m_pos.x = 0.0f;
 
 	float y, z, u, v;
-	int pixelIndex;
 	int img_width = 1000;
 	float dz = 1.0f / 1000.0f;
 	float dy = 1.0f / 1000.0f;
@@ -65,7 +64,6 @@ inline void renderPixels(Image* img, Camera* cam)
 		v = (i / img_width);
 		z = ((u / 1000.0f) * 2.0f - 1.0f) + dz;
 		y = ((v / 1000.0f) * 2.0f - 1.0f) + dy;
-		pixelIndex = v * img_width + u;
 
 		ray.m_pos.y = y;
 		ray.m_pos.z = z;

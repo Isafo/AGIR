@@ -47,7 +47,7 @@ inline bool rayIntersection(const Triangle* tri, const Ray* ray, RayIntersection
 	const float det = glm::dot(e1, p);
 
 	if (abs(det) < EPSILON)
-		return 0;
+		return false;
 
 	const glm::vec3 T = (o - v0) / det;
 	const glm::vec3 q = glm::cross(T, e1);
@@ -78,4 +78,6 @@ inline bool rayIntersection(const Triangle* tri, const Ray* ray, RayIntersection
 	data->m_intersectionPoint = o + d * t;
 	data->m_normal = normal;
 	data->m_material = tri->m_material;
+
+	return true;
 }
