@@ -16,10 +16,11 @@
 #define D_PI 3.1415926536
 
 const unsigned int C_MAX_BOUNCES = 5;
-const int C_MAX_SHADOWRAYS = 1;
+const int C_MAX_SHADOWRAYS = 5;
 
-const std::array<Sphere, 1> c_spheres{
-	{Sphere(glm::vec3(8.0f, 0.0f, -1.0f), 1.0f, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0) }
+const std::array<Sphere, 2> c_spheres{
+	{Sphere(glm::vec3(8.0f, -2.0f, -4.0f), 1.0f, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0),
+	Sphere(glm::vec3(10.0f, -2.5f, 2.0f), 1.0f, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0)}
 };
 
 inline void renderPixels(Image* img, Camera* cam);
