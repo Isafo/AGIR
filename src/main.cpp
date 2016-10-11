@@ -14,9 +14,9 @@
 
 #define D_EPSILON 0.001f
 #define D_PI 3.1415926536
+#define D_RAY_LAUNCH_PROBABILITY 0.75f
 
-const unsigned int C_MAX_BOUNCES = 5;
-const int C_MAX_SHADOWRAYS = 5;
+const int C_MAX_SHADOWRAYS = 1;
 
 const std::array<Sphere, 2> c_spheres{
 	{Sphere(glm::vec3(8.0f, -2.0f, -4.0f), 1.0f, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0),
@@ -25,7 +25,7 @@ const std::array<Sphere, 2> c_spheres{
 
 inline void renderPixels(Image* img, Camera* cam);
 inline PixelRGB L_in(Ray* ray);
-inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray, int nrBounces);
+inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray);
 inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionData);
 inline bool perfectReflectedRay(Ray* ray, RayIntersectionData* intersectionData);
 inline PixelRGB shadowRay(RayIntersectionData* intersectionData);
@@ -90,7 +90,7 @@ inline PixelRGB L_in(Ray* ray)
 
 	PixelRGB pixelColor = shadowRay(&iD);
 
-	glm::vec3 result = L_out(&iD, ray, 0);
+	glm::vec3 result = L_out(&iD, ray);
 	pixelColor.m_r += result.r;
 	pixelColor.m_g += result.g;
 	pixelColor.m_b += result.b;
@@ -107,12 +107,8 @@ inline PixelRGB L_in(Ray* ray)
 	//return iD.m_material.m_diffuse;
 }
 
-inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray, int nrBounces)
+inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray)
 {
-	glm::vec3 rayMissColor = glm::vec3(0.0f);
-
-	if (nrBounces == C_MAX_BOUNCES)
-		return rayMissColor;
 
 	glm::vec3 inEmmissive = glm::vec3(inData->m_material.m_emmisive.m_r, inData->m_material.m_emmisive.m_g, inData->m_material.m_emmisive.m_b);
 	glm::vec3 inDiffuse = glm::vec3(inData->m_material.m_diffuse.m_r, inData->m_material.m_diffuse.m_g, inData->m_material.m_diffuse.m_b);
@@ -120,23 +116,29 @@ inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray, int nrBounces)
 
 	glm::vec3 result = inEmmissive;
 
-	// randomize ray direction
-	Ray newRay;
-	newRay.m_dir = uniformSampleHemisphere(surfaceNormal);
+	float u = getRandomFloat();
+	if (u < D_RAY_LAUNCH_PROBABILITY)
+	{
+		// randomize ray direction
+		Ray newRay;
+		newRay.m_dir = uniformSampleHemisphere(surfaceNormal);
 
-	// move the new ray position a small amount away from the intersection to 
-	// avoid self intersection
-	newRay.m_pos = inData->m_intersectionPoint + glm::vec3(D_EPSILON) * newRay.m_dir;
+		// move the new ray position a small amount away from the intersection to 
+		// avoid self intersection
+		newRay.m_pos = inData->m_intersectionPoint + glm::vec3(D_EPSILON) * newRay.m_dir;
 
-	// calculate the rendering eq
-	RayIntersectionData data;
-	// multiplication by 2 is because of the PDF
-	if (findClosestIntersection(&newRay, &data)) 
-		result += 0.75f * 2.0f * L_out(&data, &newRay, nrBounces + 1) * inDiffuse * glm::dot(newRay.m_dir, surfaceNormal);
-	else 
-		result += 0.75f * 2.0f * rayMissColor * inDiffuse * glm::dot(newRay.m_dir, surfaceNormal);
-	
-	return result;
+		// calculate the rendering eq
+		RayIntersectionData data;
+		// multiplication by 2 is because of the PDF // TODO should add the albedo
+		if (findClosestIntersection(&newRay, &data))
+			result += 0.75f * float(D_PI / D_RAY_LAUNCH_PROBABILITY) * 2.0f * L_out(&data, &newRay) * inDiffuse * glm::dot(newRay.m_dir, surfaceNormal);
+
+		return result;
+	}
+	else
+	{
+		return glm::vec3(0.0f);
+	}
 }
 
 inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionData)
