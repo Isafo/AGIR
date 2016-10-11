@@ -137,7 +137,7 @@ inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray)
 	}
 	else
 	{
-		return glm::vec3(0.0f);
+		return result;
 	}
 }
 
