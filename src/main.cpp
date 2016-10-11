@@ -14,12 +14,13 @@
 
 #define D_EPSILON 0.001f
 #define D_PI 3.1415926536
-#define D_RAY_LAUNCH_PROBABILITY 0.75f
+#define D_RAY_LAUNCH_PROBABILITY 0.1f
+#define D_RAYS_PER_PIXEL 1000
 
 const int C_MAX_SHADOWRAYS = 1;
 
 const std::array<Sphere, 2> c_spheres{
-	{Sphere(glm::vec3(8.0f, -2.0f, -4.0f), 1.0f, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0),
+	{Sphere(glm::vec3(8.0f, -3.5f, -4.0f), 1.0f, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0),
 	Sphere(glm::vec3(10.0f, -2.5f, 2.0f), 1.0f, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0)}
 };
 
@@ -28,7 +29,7 @@ inline PixelRGB L_in(Ray* ray);
 inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray);
 inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionData);
 inline bool perfectReflectedRay(Ray* ray, RayIntersectionData* intersectionData);
-inline PixelRGB shadowRay(RayIntersectionData* intersectionData);
+inline glm::vec3 shadowRay(RayIntersectionData* intersectionData);
 float getRandomFloat();
 inline glm::vec3 uniformSampleHemisphere(const glm::vec3 &n);
 
@@ -54,17 +55,16 @@ inline void renderPixels(Image* img, Camera* cam)
 	ray.m_pos.x = 0.0f;
 
 	float y, z, u, v;
-	int img_width = 1000;
-	float dz = 1.0f / 1000.0f;
-	float dy = 1.0f / 1000.0f;
+	int img_width = img->x;
+	float dz = 1.0f / float(img_width);
 
-	for (int i = 0; i < 1000000; ++i)
+	for (int i = 0; i < img_width * img_width; ++i)
 	{
 		// caluclate the pixel world coordinates and index in img data
 		u = (i % img_width);
 		v = (i / img_width);
-		z = ((u / 1000.0f) * 2.0f - 1.0f) + dz;
-		y = ((v / 1000.0f) * 2.0f - 1.0f) + dy;
+		z = ((u / float(img_width)) * 2.0f - 1.0f) + dz;
+		y = ((v / float(img_width)) * 2.0f - 1.0f) + dz;
 
 		ray.m_pos.y = y;
 		ray.m_pos.z = z;
@@ -88,33 +88,35 @@ inline PixelRGB L_in(Ray* ray)
 
 	findClosestIntersection(ray, &iD);
 
-	PixelRGB pixelColor = shadowRay(&iD);
+	glm::vec3 inLight = glm::vec3(0.0f);
+	for (int i = 0; i < D_RAYS_PER_PIXEL; i++) 
+	{
+		inLight += L_out(&iD, ray);
+	}
+	inLight /= glm::vec3(float(D_RAYS_PER_PIXEL));
 
-	glm::vec3 result = L_out(&iD, ray);
-	pixelColor.m_r += result.r;
-	pixelColor.m_g += result.g;
-	pixelColor.m_b += result.b;
-	
-	// for debuging indirect illumination
-	//glm::vec3 result = L_out(&iD, ray, 0);
-
-	//PixelRGB pixelColor;
-	//pixelColor.m_r = result.r;
-	//pixelColor.m_g = result.g;
-	//pixelColor.m_b = result.b;
+	PixelRGB pixelColor;
+	pixelColor.m_r = inLight.r;
+	pixelColor.m_g = inLight.g;
+	pixelColor.m_b = inLight.b;
 
 	return pixelColor;
-	//return iD.m_material.m_diffuse;
 }
 
 inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray)
 {
-
 	glm::vec3 inEmmissive = glm::vec3(inData->m_material.m_emmisive.m_r, inData->m_material.m_emmisive.m_g, inData->m_material.m_emmisive.m_b);
 	glm::vec3 inDiffuse = glm::vec3(inData->m_material.m_diffuse.m_r, inData->m_material.m_diffuse.m_g, inData->m_material.m_diffuse.m_b);
 	glm::vec3 surfaceNormal = inData->m_normal;
 
-	glm::vec3 result = inEmmissive;
+	if (inEmmissive != glm::vec3(0.0f))
+	{
+		return inEmmissive;
+	}
+
+	glm::vec3 directLight = shadowRay(inData) / float(D_PI);
+
+	glm::vec3 indirectLight = inEmmissive;
 
 	float u = getRandomFloat();
 	if (u < D_RAY_LAUNCH_PROBABILITY)
@@ -131,13 +133,13 @@ inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray)
 		RayIntersectionData data;
 		// multiplication by 2 is because of the PDF // TODO should add the albedo
 		if (findClosestIntersection(&newRay, &data))
-			result += 0.75f * float(D_PI / D_RAY_LAUNCH_PROBABILITY) * 2.0f * L_out(&data, &newRay) * inDiffuse * glm::dot(newRay.m_dir, surfaceNormal);
+			indirectLight +=  (0.75f / D_RAY_LAUNCH_PROBABILITY) * L_out(&data, &newRay) * inDiffuse * glm::dot(newRay.m_dir, surfaceNormal);
 
-		return result;
+		return directLight + indirectLight;
 	}
 	else
 	{
-		return result;
+		return directLight + indirectLight;
 	}
 }
 
@@ -178,7 +180,7 @@ inline bool perfectReflectedRay(Ray* ray, RayIntersectionData* intersectionData)
 	return true;
 }
 
-inline PixelRGB shadowRay(RayIntersectionData* intersectionData)
+inline glm::vec3 shadowRay(RayIntersectionData* intersectionData)
 {
 	static glm::vec3 lightNormal = glm::vec3(0.0f, -1.0f, 0.0f);
 	static PixelRGB notLit = { 0.0f, 0.0f, 0.0f };
@@ -232,23 +234,24 @@ inline PixelRGB shadowRay(RayIntersectionData* intersectionData)
 				if (shadowRayLength >= q_iLength - 0.01f)
 				{
 					// TODO: rewrite this code to more general such that a light normal doesnt have to be 0, -1, 0
-					float beta = glm::dot(q_i, lightNormal) / q_iLength;
-					float alpha = glm::dot(q_i, surfaceNormal) / q_iLength;
+					//float beta = glm::dot(q_i, lightNormal) / q_iLength;
+					//float alpha = glm::dot(q_i, surfaceNormal) / q_iLength;
 
-					// calculate the geometric term
-					float G = (alpha * beta) / (q_iLength * q_iLength);
+					//// calculate the geometric term
+					//float G = (alpha * beta) / (q_iLength * q_iLength);
 
-					directLightSum += diffuse *G;
+					directLightSum += diffuse * glm::max(0.0f, glm::dot(q_i, surfaceNormal) / q_iLength);// *G;
 				}
 			}
 		}
 	}
 
 	// TODO: L0??? Le is (1.0, 1.0, 1.0) for all light sources not needed?
-	directLightSum = directLightSum * 2.0f * C_LIGHT_AREA / float(C_MAX_SHADOWRAYS);
+	directLightSum = directLightSum / float(C_MAX_SHADOWRAYS); //* 2.0f * C_LIGHT_AREA / float(C_MAX_SHADOWRAYS);
 
-	PixelRGB directLight = { directLightSum.r, directLightSum.g, directLightSum.b };
-	return directLight;
+	//directLightSum = directLightSum * C_LIGHT_AREA / float(C_MAX_SHADOWRAYS);
+
+	return directLightSum;
 }
 
 float getRandomFloat()
