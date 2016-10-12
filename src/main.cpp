@@ -8,6 +8,8 @@
 #include "triangleScene.h"
 
 #include <iostream>
+#include <thread>
+#include <atomic>
 #include <array>
 #include <random>
 #include "math.h"
@@ -15,9 +17,11 @@
 #define D_EPSILON 0.001f
 #define D_PI 3.1415926536
 #define D_RAY_LAUNCH_PROBABILITY 0.1f
-#define D_RAYS_PER_PIXEL 1000
+#define D_RAYS_PER_PIXEL 10000
 
 const int C_MAX_SHADOWRAYS = 1;
+
+std::atomic<size_t> currentPixelIndex(-1);
 
 const std::array<Sphere, 2> c_spheres{
 	{Sphere(glm::vec3(8.0f, -3.5f, -4.0f), 1.0f, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0),
@@ -39,7 +43,24 @@ int main(){
 
 	Camera cam(glm::vec3(-1.0f, 0.0f, 0.0f));
 
-	renderPixels(&img, &cam);
+	const size_t nrThreads = std::thread::hardware_concurrency();
+	printf("Using %i threads.\n", nrThreads);
+
+	if (nrThreads > 1)
+	{
+		std::vector<std::thread> threads;
+		threads.resize(nrThreads);
+
+		for (auto& t : threads)
+			t = std::thread(renderPixels, &img, &cam);
+
+		for (auto& t : threads)
+			t.join();
+	}
+	else
+	{
+		renderPixels(&img, &cam);
+	}
 
 	img.saveBMP();
 
@@ -58,11 +79,14 @@ inline void renderPixels(Image* img, Camera* cam)
 	int img_width = img->x;
 	float dz = 1.0f / float(img_width);
 
-	for (int i = 0; i < img_width * img_width; ++i)
+	size_t pixelIndex = ++currentPixelIndex;
+	const size_t nrPixels = img_width * img_width;
+
+	while (pixelIndex < nrPixels)
 	{
 		// caluclate the pixel world coordinates and index in img data
-		u = (i % img_width);
-		v = (i / img_width);
+		u = (pixelIndex % img_width);
+		v = (pixelIndex / img_width);
 		z = ((u / float(img_width)) * 2.0f - 1.0f) + dz;
 		y = ((v / float(img_width)) * 2.0f - 1.0f) + dz;
 
@@ -73,9 +97,11 @@ inline void renderPixels(Image* img, Camera* cam)
 
 		PixelRGB pixelColor = L_in(&ray);
 
-		img->imgData.r[i] = pixelColor.m_r;
-		img->imgData.g[i] = pixelColor.m_g;
-		img->imgData.b[i] = pixelColor.m_b;
+		img->imgData.r[pixelIndex] = pixelColor.m_r;
+		img->imgData.g[pixelIndex] = pixelColor.m_g;
+		img->imgData.b[pixelIndex] = pixelColor.m_b;
+
+		pixelIndex = ++currentPixelIndex;
 	}
 }
 

@@ -161,6 +161,55 @@ const std::vector<Triangle> c_triangles{
 		0.0f
 	),
 
+	//Tetrahedron
+	Triangle(
+		glm::vec3(9.0f, -1.0f, 0.0f),
+		glm::vec3(7.0, -5.0f, 0.0f),
+		glm::vec3(11.0f, -5.0f, 2.0f),
+		1.0f,
+		1.0f,
+		1.0f,
+		0.0f,
+		0.0f,
+		0.0f
+	),
+
+	Triangle(
+		glm::vec3(9.0f, -1.0f, 0.0f),
+		glm::vec3(11.0f, -5.0f, -2.0f),
+		glm::vec3(7.0, -5.0, 0.0f),
+		1.0f,
+		1.0f,
+		1.0f,
+		0.0f,
+		0.0f,
+		0.0f
+	),
+
+	Triangle(
+		glm::vec3(9.0f, -1.0f, 0.0f),
+		glm::vec3(11.0f, -5.0f, -2.0f),
+		glm::vec3(11.0f, -5.0f, 2.0f),
+		1.0f,
+		1.0f,
+		1.0f,
+		0.0f,
+		0.0f,
+		0.0f
+	),
+
+	Triangle(
+		glm::vec3(7.0, -5.0f, 0.0f),
+		glm::vec3(11.0f, -5.0f, 2.0f),
+		glm::vec3(11.0f, -5.0, -2.0f),
+		1.0f,
+		1.0f,
+		1.0f,
+		0.0f,
+		0.0f,
+		0.0f
+	),
+
 	// floor
 	Triangle(
 		glm::vec3(5.0f, -5.0f, 0.0f),
@@ -299,55 +348,6 @@ const std::vector<Triangle> c_triangles{
 		glm::vec3(0.0f, 5.0f, 6.0f),
 		glm::vec3(-3.0f, 5.0f, 0.0f),
 		glm::vec3(5.0f, 5.0f, 0.0f),
-		1.0f,
-		1.0f,
-		1.0f,
-		0.0f,
-		0.0f,
-		0.0f
-	),
-
-	//Tetrahedron
-	Triangle(
-		glm::vec3(9.0f, -1.0f, 0.0f),
-		glm::vec3(7.0, -5.0f, 0.0f),
-		glm::vec3(11.0f, -5.0f, 2.0f),
-		1.0f,
-		1.0f,
-		1.0f,
-		0.0f,
-		0.0f,
-		0.0f
-	),
-
-	Triangle(
-		glm::vec3(9.0f, -1.0f, 0.0f),
-		glm::vec3(11.0f, -5.0f, -2.0f),
-		glm::vec3(7.0, -5.0, 0.0f),
-		1.0f,
-		1.0f,
-		1.0f,
-		0.0f,
-		0.0f,
-		0.0f
-	),
-
-	Triangle(
-		glm::vec3(9.0f, -1.0f, 0.0f),
-		glm::vec3(11.0f, -5.0f, -2.0f),
-		glm::vec3(11.0f, -5.0f, 2.0f),
-		1.0f,
-		1.0f,
-		1.0f,
-		0.0f,
-		0.0f,
-		0.0f
-	),
-
-	Triangle(
-		glm::vec3(7.0, -5.0f, 0.0f),
-		glm::vec3(11.0f, -5.0f, 2.0f),
-		glm::vec3(11.0f, -5.0, -2.0f),
 		1.0f,
 		1.0f,
 		1.0f,
