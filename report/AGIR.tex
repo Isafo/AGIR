@@ -88,7 +88,10 @@ For lambertian reflectors the randomly produced directions should be uniformly s
 	\end{split}
 \end{align*}
 
-where $u$ and $v$ are randomly generated values within the distribution $[0, 1]$.
+where $u$ and $v$ are randomly generated values within the distribution $[0, 1]$. This generates uniformly distributed points on a sphere \cite{wolfram}. By ensuring that the generated ray direction points in the same direction as the surface normal the direction on the hemisphere is produced.
+
+\subsection{Russian Roulette}
+Since the reflected light from a point is determined by the light emitted and the incoming light that is reflected there is an infinite recursion in the rendering equation. Thus a method for determining when a ray should be terminated is needed. In this case Russian roulette is used. In Russian roulette a random value $u$ is generated in the range [0, 1]. If $u$ is larger than a set probability $P$ the ray is terminated. This introduces a bias in the renderer. In order to remove this bias the result is weighted by $\frac{1}{P}$.
 
 \subsection{Ray surface intersection}
 In order to determine what objects and where on the object a ray hits we need to calculate its intersection between all objects in the scene. In case of multiple intersections the nearest one is used. A ray is in this case a semi-infinite line defined by an origin $\mathbf{o}$ and a direction $\mathbf{d}$ and every point on the ray is given by:
@@ -167,6 +170,8 @@ where d is the length of the shadow ray.
 \subsection{Indirect illumination}
 
 \section{Results}
+
+\section{Discussion}
 
 
 \newpage
