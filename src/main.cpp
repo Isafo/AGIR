@@ -17,7 +17,7 @@
 #define D_EPSILON 0.001f
 #define D_PI 3.1415926536
 #define D_RAY_LAUNCH_PROBABILITY 0.1f
-#define D_RAYS_PER_PIXEL 10000
+#define D_RAYS_PER_PIXEL 1000
 
 const int C_MAX_SHADOWRAYS = 1;
 
@@ -65,8 +65,6 @@ int main(){
 	img.saveBMP();
 
 	std::cout << "\a";
-	
-	return 0;
 }
 
 
@@ -84,7 +82,7 @@ inline void renderPixels(Image* img, Camera* cam)
 
 	while (pixelIndex < nrPixels)
 	{
-		// caluclate the pixel world coordinates and index in img data
+		// caluclate the pixel world coordinates
 		u = (pixelIndex % img_width);
 		v = (pixelIndex / img_width);
 		z = ((u / float(img_width)) * 2.0f - 1.0f) + dz;
@@ -121,11 +119,7 @@ inline PixelRGB L_in(Ray* ray)
 	}
 	inLight /= glm::vec3(float(D_RAYS_PER_PIXEL));
 
-	PixelRGB pixelColor;
-	pixelColor.m_r = inLight.r;
-	pixelColor.m_g = inLight.g;
-	pixelColor.m_b = inLight.b;
-
+	PixelRGB pixelColor{ inLight.r, inLight.g, inLight.b };
 	return pixelColor;
 }
 
@@ -140,7 +134,7 @@ inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray)
 		return inEmmissive;
 	}
 
-	glm::vec3 directLight = shadowRay(inData) / float(D_PI);
+	glm::vec3 directLight = shadowRay(inData);
 
 	glm::vec3 indirectLight = inEmmissive;
 
@@ -157,7 +151,7 @@ inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray)
 
 		// calculate the rendering eq
 		RayIntersectionData data;
-		// multiplication by 2 is because of the PDF // TODO should add the albedo
+		// TODO should add an albedo variable to the material struct and use that instead of all having albedo of 0.75
 		if (findClosestIntersection(&newRay, &data))
 			indirectLight +=  (0.75f / D_RAY_LAUNCH_PROBABILITY) * L_out(&data, &newRay) * inDiffuse * glm::dot(newRay.m_dir, surfaceNormal);
 
@@ -183,7 +177,6 @@ inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionD
 
 inline bool perfectReflectedRay(Ray* ray, RayIntersectionData* intersectionData)
 {
-
 	Ray reflectedRay;
 	reflectedRay.m_pos = intersectionData->m_intersectionPoint;
 
@@ -199,9 +192,9 @@ inline bool perfectReflectedRay(Ray* ray, RayIntersectionData* intersectionData)
 
 	findClosestIntersection(&reflectedRay, &reflectedRayIntersection);
 
-	intersectionData->m_material.m_diffuse.m_r = intersectionData->m_material.m_diffuse.m_r * 0.8f + reflectedRayIntersection.m_material.m_diffuse.m_r * 0.2f;
-	intersectionData->m_material.m_diffuse.m_g = intersectionData->m_material.m_diffuse.m_g * 0.8f + reflectedRayIntersection.m_material.m_diffuse.m_g * 0.2f;
-	intersectionData->m_material.m_diffuse.m_b = intersectionData->m_material.m_diffuse.m_b * 0.8f + reflectedRayIntersection.m_material.m_diffuse.m_b * 0.2f;
+	intersectionData->m_material.m_diffuse.m_r = reflectedRayIntersection.m_material.m_diffuse.m_r;
+	intersectionData->m_material.m_diffuse.m_g = reflectedRayIntersection.m_material.m_diffuse.m_g;
+	intersectionData->m_material.m_diffuse.m_b = reflectedRayIntersection.m_material.m_diffuse.m_b;
 
 	return true;
 }
@@ -267,17 +260,14 @@ inline glm::vec3 shadowRay(RayIntersectionData* intersectionData)
 					float G = (alpha * beta) / (q_iLength * q_iLength);
 
 					directLightSum += diffuse * G;
-					//directLightSum += diffuse * glm::max(0.0f, glm::dot(q_i, surfaceNormal) / q_iLength);// *G;
 				}
 			}
 		}
 	}
 
-	// TODO: L0??? Le is (1.0, 1.0, 1.0) for all light sources not needed?
-	//directLightSum = directLightSum / float(C_MAX_SHADOWRAYS); //* 2.0f * C_LIGHT_AREA / float(C_MAX_SHADOWRAYS);
-
-	//TODO: why do i have to scale this by 8 should be 2 what is wrong?
-	directLightSum = directLightSum * (8 * C_LIGHT_AREA / float(C_MAX_SHADOWRAYS));
+	//TODO: L0??? Le is (1.0, 1.0, 1.0) for all light sources not needed?
+	//TODO: why does the image become so dark if i dont scale this by 8 should be 2 what is wrong?
+	directLightSum = directLightSum * (2 * C_LIGHT_AREA / float(C_MAX_SHADOWRAYS));
 
 	return directLightSum;
 }

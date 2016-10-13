@@ -4,9 +4,8 @@
 #include "Ray.h"
 #include "Material.h"
 
-class Sphere 
+struct Sphere 
 {
-public:  
 	Sphere(const glm::vec3 p, float r,
 		float dR, float dG, float dB, float eR, float eG, float eB)
 		: m_position(p), m_radius(r)
@@ -18,7 +17,6 @@ public:
 		m_material.m_emmisive.m_g = eG;
 		m_material.m_emmisive.m_b = eB;
 	};
-	~Sphere() = default;
 
 	glm::vec3 m_position;
 	float m_radius;
