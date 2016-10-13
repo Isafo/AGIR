@@ -260,22 +260,24 @@ inline glm::vec3 shadowRay(RayIntersectionData* intersectionData)
 				if (shadowRayLength >= q_iLength - 0.01f)
 				{
 					// TODO: rewrite this code to more general such that a light normal doesnt have to be 0, -1, 0
-					//float beta = glm::dot(q_i, lightNormal) / q_iLength;
-					//float alpha = glm::dot(q_i, surfaceNormal) / q_iLength;
+					float beta = glm::dot(-q_i, lightNormal) / q_iLength;
+					float alpha = glm::dot(q_i, surfaceNormal) / q_iLength;
 
-					//// calculate the geometric term
-					//float G = (alpha * beta) / (q_iLength * q_iLength);
+					// calculate the geometric term
+					float G = (alpha * beta) / (q_iLength * q_iLength);
 
-					directLightSum += diffuse * glm::max(0.0f, glm::dot(q_i, surfaceNormal) / q_iLength);// *G;
+					directLightSum += diffuse * G;
+					//directLightSum += diffuse * glm::max(0.0f, glm::dot(q_i, surfaceNormal) / q_iLength);// *G;
 				}
 			}
 		}
 	}
 
 	// TODO: L0??? Le is (1.0, 1.0, 1.0) for all light sources not needed?
-	directLightSum = directLightSum / float(C_MAX_SHADOWRAYS); //* 2.0f * C_LIGHT_AREA / float(C_MAX_SHADOWRAYS);
+	//directLightSum = directLightSum / float(C_MAX_SHADOWRAYS); //* 2.0f * C_LIGHT_AREA / float(C_MAX_SHADOWRAYS);
 
-	//directLightSum = directLightSum * C_LIGHT_AREA / float(C_MAX_SHADOWRAYS);
+	//TODO: why do i have to scale this by 8 should be 2 what is wrong?
+	directLightSum = directLightSum * (8 * C_LIGHT_AREA / float(C_MAX_SHADOWRAYS));
 
 	return directLightSum;
 }
