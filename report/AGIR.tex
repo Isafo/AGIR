@@ -168,11 +168,50 @@ where $M$ is the number of shadow rays, $x_N$ is the intersection point the shad
 where d is the length of the shadow ray.
 
 \subsection{Indirect illumination}
+The indirect lighting is recursivly estimated using the rendering equation, eq. \ref{eq:rendereq} and Monte Carlo integration to generate random point on the hemisphere. Russian roulette is used to determine whether to launch a new ray or terminate the path. Since using the Russian roulette method introduces a bias the integral part of the rendering equation becomes:
+
+\begin{equation*}
+	L(\mathbf{x}\rightarrow\omega_{out}) = \frac{\pi}{P}f_r(\mathbf{x}, \omega_{in}, \omega_out)L(\mathbf{x}\leftarrow\omega_{in})
+\end{equation*}
+
+in order to remove the bias. Since the BRDF for Lambertian reflectors is $\frac{\rho}{\pi}$ the integral part of the rendering equation for Lambertian reflectors can be simplified to:
+
+\begin{equation*}
+	L(\mathbf{x}\rightarrow\omega_{out}) = \frac{\rho}{P}L(\mathbf{x}\leftarrow\omega_{in})
+\end{equation*}
+
+where $\rho$ is the albedo and $P$ is the probability to launch a new ray.
 
 \section{Results}
 
-\section{Discussion}
+\begin{figure*}[ht]
+\centering
+\includegraphics[]{pics/p480r100000.png}
+\caption{\label{fig:resultat} A 480x480 pixel image rendered using 100000 rays per pixel.}
+\end{figure*}
 
+The implemented Monte Carlo path tracer allows for color bleed between objects, best seen on the tetrahedra object in figure \ref{fig:resultat}. The shadows in the scene get both the umbra and penumbra creating soft shadows. 
+
+
+
+\begin{table}
+	\begin{tabular}{ r  r  r}
+  		Resolution & Rays per pixel & Rendering time (min) \\
+		\hline	
+  		480x480 & 100k & 258min \\  		
+  		\hline
+  		320x320 & 10k & 0 \\
+  		
+	\end{tabular}
+	\caption{\label{tab:benchmarks} Benchmarks for rendering the image with different settings using 4 threads.}
+\end{table}
+
+\section{Discussion}
+With a scene containing multiple light source or a large light source the rays are more likely to hit a light source before the path is terminated then if the scene only contains one small light source. It is also more likely for a ray to hit a light source if the ray contains few objects. Thus the number or rays needed to render a scene and produce a good results is dependent on the scene being rendered.
+
+A possible performance improvement for the renderer could be to calculate ray-triangle intersections using Single Instruction Multiple Data, or SIMD for short. By using SIMD the intersection between a ray and four triangles could be performed simultaneously. Since the code is written using array of structures (AoS) instead of structures of arrays (SoA), that is preferred for SIMD, the data would either need to be repacked or the code would need to be rewritten using the SoA approach. Since the current scene only contains 30 triangles it is questionable whether SIMD would be a performance improvement especially if the repacking approach is chosen.
+
+An improvement to the light model used by the renderer would be to implement the Oren-Nayar reflection model. This would allow the renderer to objects that have a roughness which all real objects have to a different degree. The renderer does not currently support transparent objects either. This could be implemented using Snell's law to calculate the refracted ray and caustics could be achieved by extending the ray tracer with a photon map. The use of a photon map also reduce the noise in the image created when rendering only using Monte Carlo ray tracing and improves the performance of the renderer.
 
 \newpage
 \printbibliography
