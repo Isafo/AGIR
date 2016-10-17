@@ -20,7 +20,8 @@ const std::vector<Triangle> c_triangles{
 		0.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -32,7 +33,8 @@ const std::vector<Triangle> c_triangles{
 		0.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	//blue wall
@@ -45,7 +47,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -57,7 +60,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	// cyan wall
@@ -70,7 +74,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -82,7 +87,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	// magenta wall
@@ -95,7 +101,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -107,7 +114,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 
@@ -121,7 +129,8 @@ const std::vector<Triangle> c_triangles{
 		0.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -133,7 +142,8 @@ const std::vector<Triangle> c_triangles{
 		0.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	// red wall
@@ -146,7 +156,8 @@ const std::vector<Triangle> c_triangles{
 		0.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -158,7 +169,8 @@ const std::vector<Triangle> c_triangles{
 		0.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	//Tetrahedron
@@ -171,7 +183,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.75f
 	),
 
 	Triangle(
@@ -183,7 +196,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.75f
 	),
 
 	Triangle(
@@ -195,7 +209,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.75f
 	),
 
 	Triangle(
@@ -207,7 +222,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.75f
 	),
 
 	// floor
@@ -220,7 +236,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -232,7 +249,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -244,7 +262,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -256,7 +275,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -268,7 +288,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -280,7 +301,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	// roof
@@ -293,7 +315,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -305,7 +328,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -317,7 +341,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -329,7 +354,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	Triangle(
@@ -341,7 +367,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f, 
+		0.95f
 	),
 
 	Triangle(
@@ -353,7 +380,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		0.0f,
 		0.0f,
-		0.0f
+		0.0f,
+		0.95f
 	),
 
 	// light
@@ -366,7 +394,8 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		1.0f,
 		1.0f,
-		1.0f
+		1.0f,
+		0.0f
 	),
 
 	Triangle(
@@ -378,6 +407,7 @@ const std::vector<Triangle> c_triangles{
 		1.0f,
 		1.0f,
 		1.0f,
-		1.0f
+		1.0f,
+		0.0f
 	)
 };

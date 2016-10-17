@@ -1,6 +1,8 @@
 #include "Image.h"
 #include <iostream>
 
+#include "glm/glm.hpp"
+
 Image::Image()
 {
 	imgData.r = new float[x * y];
@@ -26,7 +28,7 @@ void Image::saveBMP()
 	img = (unsigned char *)malloc(3 * x*y);
 	memset(img, 0, sizeof(img));
 
-	float r; float g; float b;
+	float r; float g; float b; float gr; float gg; float gb; float tr; float tg; float tb;
 	int iX;
 	int iY;
 
@@ -35,12 +37,18 @@ void Image::saveBMP()
 		for (int j = 0; j < x; j++)
 		{
 			iX = j; iY = (y - 1) - i;
-			r = imgData.r[i * y + j] * 255;
-			g = imgData.g[i * y + j] * 255;
-			b = imgData.b[i * y + j] * 255;
-			if (r > 255) r = 255;
-			if (g > 255) g = 255;
-			if (b > 255) b = 255;
+			tr = imgData.r[i * y + j];
+			tg = imgData.g[i * y + j];
+			tb = imgData.b[i * y + j];
+			if (tr > 1.0f) tr = 1.0f;
+			if (tg > 1.0f) tg = 1.0f;
+			if (tb > 1.0f) tb = 1.0f;
+			gr = sqrt(tr);
+			gg = sqrt(tg);
+			gb = sqrt(tb);
+			r = gr * 255;
+			g = gg * 255;
+			b = gb * 255;
 			img[(iX + iY*x) * 3 + 2] = (unsigned char)(r);
 			img[(iX + iY*x) * 3 + 1] = (unsigned char)(g);
 			img[(iX + iY*x) * 3 + 0] = (unsigned char)(b);

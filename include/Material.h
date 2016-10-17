@@ -11,4 +11,5 @@ struct TriMaterial
 {
 	PixelRGB m_diffuse;
 	PixelRGB m_emmisive;
+	float albedo;
 };

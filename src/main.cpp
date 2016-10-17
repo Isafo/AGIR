@@ -17,15 +17,15 @@
 #define D_EPSILON 0.001f
 #define D_PI 3.1415926536
 #define D_RAY_LAUNCH_PROBABILITY 0.1f
-#define D_RAYS_PER_PIXEL 1000
+#define D_RAYS_PER_PIXEL 10000
 
 const int C_MAX_SHADOWRAYS = 1;
 
 std::atomic<size_t> currentPixelIndex(-1);
 
 const std::array<Sphere, 2> c_spheres{
-	{Sphere(glm::vec3(8.0f, -3.5f, -4.0f), 1.0f, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0),
-	Sphere(glm::vec3(10.0f, -2.5f, 2.0f), 1.0f, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0)}
+	{ Sphere(glm::vec3(8.0f, -3.5f, -4.0f), 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.75f),
+	Sphere(glm::vec3(10.0f, -2.5f, 2.0f), 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.75f) }
 };
 
 inline void renderPixels(Image* img, Camera* cam);
@@ -128,6 +128,7 @@ inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray)
 	glm::vec3 inEmmissive = glm::vec3(inData->m_material.m_emmisive.m_r, inData->m_material.m_emmisive.m_g, inData->m_material.m_emmisive.m_b);
 	glm::vec3 inDiffuse = glm::vec3(inData->m_material.m_diffuse.m_r, inData->m_material.m_diffuse.m_g, inData->m_material.m_diffuse.m_b);
 	glm::vec3 surfaceNormal = inData->m_normal;
+	float albedo = inData->m_material.albedo;
 
 	if (inEmmissive != glm::vec3(0.0f))
 	{
@@ -151,9 +152,9 @@ inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray)
 
 		// calculate the rendering eq
 		RayIntersectionData data;
-		// TODO should add an albedo variable to the material struct and use that instead of all having albedo of 0.75
+
 		if (findClosestIntersection(&newRay, &data))
-			indirectLight +=  (0.75f / D_RAY_LAUNCH_PROBABILITY) * L_out(&data, &newRay) * inDiffuse * glm::dot(newRay.m_dir, surfaceNormal);
+			indirectLight +=  (albedo / D_RAY_LAUNCH_PROBABILITY) * L_out(&data, &newRay) * inDiffuse * glm::dot(newRay.m_dir, surfaceNormal);
 
 		return directLight + indirectLight;
 	}
@@ -266,7 +267,6 @@ inline glm::vec3 shadowRay(RayIntersectionData* intersectionData)
 	}
 
 	//TODO: L0??? Le is (1.0, 1.0, 1.0) for all light sources not needed?
-	//TODO: why does the image become so dark if i dont scale this by 8 should be 2 what is wrong?
 	directLightSum = directLightSum * (2 * C_LIGHT_AREA / float(C_MAX_SHADOWRAYS));
 
 	return directLightSum;

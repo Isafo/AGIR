@@ -16,8 +16,8 @@ public:
 	void saveBMP();
 
 	// currently requires x == y
-	const int x = 320;
-	const int y = 320;
+	const int x = 480;
+	const int y = 480;
 
 	Color imgData;
 };

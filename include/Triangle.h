@@ -10,7 +10,7 @@
 struct Triangle 
 {
 	Triangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, 
-		float dR, float dG, float dB, float eR, float eG, float eB)
+		float dR, float dG, float dB, float eR, float eG, float eB, float albedo)
 		: m_a(a), m_b(b), m_c(c)
 	{
 		m_normal = glm::normalize(glm::cross(m_b - m_a, m_c - m_a));
@@ -20,6 +20,7 @@ struct Triangle
 		m_material.m_emmisive.m_r = eR;
 		m_material.m_emmisive.m_g = eG;
 		m_material.m_emmisive.m_b = eB;
+		m_material.albedo = albedo;
 	}
 
 	glm::vec3 m_a;

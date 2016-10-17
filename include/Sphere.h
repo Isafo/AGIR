@@ -7,7 +7,7 @@
 struct Sphere 
 {
 	Sphere(const glm::vec3 p, float r,
-		float dR, float dG, float dB, float eR, float eG, float eB)
+		float dR, float dG, float dB, float eR, float eG, float eB, float albedo)
 		: m_position(p), m_radius(r)
 	{
 		m_material.m_diffuse.m_r = dR;
@@ -16,6 +16,7 @@ struct Sphere
 		m_material.m_emmisive.m_r = eR;
 		m_material.m_emmisive.m_g = eG;
 		m_material.m_emmisive.m_b = eB;
+		m_material.albedo = albedo;
 	};
 
 	glm::vec3 m_position;
