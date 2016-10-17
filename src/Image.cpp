@@ -43,9 +43,9 @@ void Image::saveBMP()
 			if (tr > 1.0f) tr = 1.0f;
 			if (tg > 1.0f) tg = 1.0f;
 			if (tb > 1.0f) tb = 1.0f;
-			gr = sqrt(tr);
-			gg = sqrt(tg);
-			gb = sqrt(tb);
+			gr = glm::pow(tr, 0.4f);
+			gg = glm::pow(tg, 0.4f);
+			gb = glm::pow(tb, 0.4f);
 			r = gr * 255;
 			g = gg * 255;
 			b = gb * 255;

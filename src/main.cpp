@@ -17,7 +17,7 @@
 #define D_EPSILON 0.001f
 #define D_PI 3.1415926536
 #define D_RAY_LAUNCH_PROBABILITY 0.1f
-#define D_RAYS_PER_PIXEL 10000
+#define D_RAYS_PER_PIXEL 100
 
 const int C_MAX_SHADOWRAYS = 1;
 
