@@ -1,3 +1,8 @@
+#include <iostream>
+#include <thread>
+#include <atomic>
+#include <array>
+
 #include "glm/glm.hpp"
 
 #include "Sphere.h"
@@ -6,18 +11,11 @@
 #include "Triangle.h"
 #include "Image.h"
 #include "triangleScene.h"
-
-#include <iostream>
-#include <thread>
-#include <atomic>
-#include <array>
-#include <random>
-#include "math.h"
+#include "Utils.h"
 
 #define D_EPSILON 0.001f
-#define D_PI 3.1415926536
 #define D_RAY_LAUNCH_PROBABILITY 0.1f
-#define D_RAYS_PER_PIXEL 100
+#define D_RAYS_PER_PIXEL 10
 
 const int C_MAX_SHADOWRAYS = 1;
 
@@ -28,14 +26,12 @@ const std::array<Sphere, 2> c_spheres{
 	Sphere(glm::vec3(10.0f, -2.5f, 2.0f), 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.75f) }
 };
 
-inline void renderPixels(Image* img, Camera* cam);
-inline PixelRGB L_in(Ray* ray);
-inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray);
-inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionData);
-inline bool perfectReflectedRay(Ray* ray, RayIntersectionData* intersectionData);
-inline glm::vec3 shadowRay(RayIntersectionData* intersectionData);
-float getRandomFloat();
-inline glm::vec3 uniformSampleHemisphere(const glm::vec3 &n);
+void renderPixels(Image* img, Camera* cam);
+PixelRGB L_in(Ray* ray);
+glm::vec3 L_out(RayIntersectionData* inData, Ray* ray);
+bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionData);
+bool perfectReflectedRay(Ray* ray, RayIntersectionData* intersectionData);
+glm::vec3 shadowRay(RayIntersectionData* intersectionData);
 
 int main(){
 
@@ -67,8 +63,7 @@ int main(){
 	std::cout << "\a";
 }
 
-
-inline void renderPixels(Image* img, Camera* cam)
+void renderPixels(Image* img, Camera* cam)
 {
 	Ray ray;
 	ray.m_pos.x = 0.0f;
@@ -103,7 +98,7 @@ inline void renderPixels(Image* img, Camera* cam)
 	}
 }
 
-inline PixelRGB L_in(Ray* ray)
+PixelRGB L_in(Ray* ray)
 {
 	RayIntersectionData iD;
 	iD.m_material.m_diffuse.m_r = 0.0f;
@@ -123,7 +118,7 @@ inline PixelRGB L_in(Ray* ray)
 	return pixelColor;
 }
 
-inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray)
+glm::vec3 L_out(RayIntersectionData* inData, Ray* ray)
 {
 	glm::vec3 inEmmissive = glm::vec3(inData->m_material.m_emmisive.m_r, inData->m_material.m_emmisive.m_g, inData->m_material.m_emmisive.m_b);
 	glm::vec3 inDiffuse = glm::vec3(inData->m_material.m_diffuse.m_r, inData->m_material.m_diffuse.m_g, inData->m_material.m_diffuse.m_b);
@@ -164,7 +159,7 @@ inline glm::vec3 L_out(RayIntersectionData* inData, Ray* ray)
 	}
 }
 
-inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionData)
+bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionData)
 {
 	bool intersected = false;
 	for (const auto& t : c_triangles)
@@ -176,7 +171,7 @@ inline bool findClosestIntersection(Ray* ray, RayIntersectionData* intersectionD
 	return intersected;
 }
 
-inline bool perfectReflectedRay(Ray* ray, RayIntersectionData* intersectionData)
+bool perfectReflectedRay(Ray* ray, RayIntersectionData* intersectionData)
 {
 	Ray reflectedRay;
 	reflectedRay.m_pos = intersectionData->m_intersectionPoint;
@@ -200,7 +195,7 @@ inline bool perfectReflectedRay(Ray* ray, RayIntersectionData* intersectionData)
 	return true;
 }
 
-inline glm::vec3 shadowRay(RayIntersectionData* intersectionData)
+glm::vec3 shadowRay(RayIntersectionData* intersectionData)
 {
 	static glm::vec3 lightNormal = glm::vec3(0.0f, -1.0f, 0.0f);
 	static PixelRGB notLit = { 0.0f, 0.0f, 0.0f };
@@ -270,38 +265,4 @@ inline glm::vec3 shadowRay(RayIntersectionData* intersectionData)
 	directLightSum = directLightSum * (2 * C_LIGHT_AREA / float(C_MAX_SHADOWRAYS));
 
 	return directLightSum;
-}
-
-float getRandomFloat()
-{
-	static std::random_device rd;
-	static std::mt19937 re(rd());
-	static std::uniform_real_distribution<float> dist(0.0f, 1.0f);
-
-	return dist(re);
-}
-
-inline glm::vec3 uniformSampleHemisphere(const glm::vec3 &n)
-{
-	// generate random numbers
-	float u = getRandomFloat();
-	float v = getRandomFloat();
-
-	float theta = 2 * D_PI * u;
-	float phi = acos(2.0f * v - 1.0f);
-
-	// calculate the point on the sphere
-	float cosTheta = cos(theta);
-	float sinTheta = sin(theta);
-	float cosPhi = cos(phi);
-	float sinPhi = sin(phi);
-	glm::vec3 rayDir = glm::vec3(cosTheta * sinPhi, sinTheta * sinPhi, cosPhi);
-
-	// swap the ray dir if it doesn't point in the surface normal direction
-	// to make sure they are within the hemisphere
-	float dot = glm::dot(n, rayDir);
-	if (dot <= 0.0)
-		rayDir = -rayDir;
-
-	return rayDir;
 }
